@@ -1,10 +1,16 @@
 import serial
+from packet_encode import atcom_query
+from packet_decode import rxpacket
+
 ser = serial.Serial('/dev/ttyUSB0')
 print(ser.name)
 
-atcomPL = b'\x7e\x00\x04\x08\x01\x50\x4c\x5a'
-ser.write(atcomPL)
-line = ser.read(10)
-print(line)
+ser.write(atcom_query('PL'))
+status, payload = rxpacket(ser)
+print('Payload: {}'.format(payload))
+
+ser.write(atcom_query('CH'))
+status, payload = rxpacket(ser)
+print('Payload: {}'.format(payload))
 
 ser.close()
