@@ -34,3 +34,62 @@ def atcom_query(param):
   bytestr = bytestr + checksum
 
   return bytestr
+
+# Debug command: Unicast
+#   n - number of unicast transmissions
+#   dest - 64-bit destination address (in bytes)
+def debug_unicast(n,dest):
+
+  # Header
+  bytestr = b'\x7e'
+
+  # Length
+  length = 17
+  bytestr = bytestr + (length).to_bytes(2,'big')
+
+  # Frame type
+  ftype = b'\x10'
+  bytestr = bytestr + ftype
+
+  # Frame ID
+  fid = b'\x01'
+  bytestr = bytestr + fid
+  checksum = byte_sum(ftype,fid)
+
+  # 64-bit dest addr
+  bytestr = bytestr + dest
+  for i in range(8):
+    checksum = byte_sum(checksum,dest[i].to_bytes(1,'big'))
+    
+  # 16-bit dest addr
+  dest16 = b'\xff\xfe' 
+  bytestr = bytestr + dest16
+  for i in range(2):
+    checksum = byte_sum(checksum,dest16[i].to_bytes(1,'big'))
+
+  # Broadcast radius
+  brad = b'\x00'
+  bytestr = bytestr + brad
+  checksum = byte_sum(checksum,brad)
+
+  # Options
+  opt = b'\x00'
+  bytestr = bytestr + opt
+  checksum = byte_sum(checksum,opt)
+
+  # Data
+  data = b'DU'
+  if n > 255:
+    print('Error: number of transmissions exceeds limit')
+    return bytestr
+  data = data + (n).to_bytes(1,'big')
+  bytestr = bytestr + data
+  checksum = byte_sum(checksum,b'D')
+  checksum = byte_sum(checksum,b'U')
+  checksum = byte_sum(checksum,(n).to_bytes(1,'big'))
+
+  # Checksum
+  checksum = byte_diff0xff(checksum)
+  bytestr = bytestr + checksum
+
+  return bytestr  
