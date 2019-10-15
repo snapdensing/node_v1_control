@@ -15,10 +15,10 @@ print(ser.name)
 #print('Payload: {}'.format(payload))
 
 dest = b'\x00\x13\xa2\x00\x40\xbf\x1f\x4a'
-tx_packet = debug_unicast(1,dest)
+tx_packet = debug_unicast(10,dest)
 print('Tx Packet: {}'.format(tx_packet))
 ser.write(tx_packet)
-for i in range(2):
+for i in range(11):
   status, payload = rxpacket(ser)
   print('Payload: {}'.format(payload))
   print('---------')
