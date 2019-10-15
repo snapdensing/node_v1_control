@@ -13,7 +13,7 @@ def cmdtest_uartsetup():
   return ser
 
 # Debug Unicast
-def cmdtest_unicast(ser,n,dest):
+def cmdtest_remote_unicast(ser,n,dest):
   from packet_encode import debug_unicast
   from packet_decode import rxpacket
   tx_packet = debug_unicast(n,dest)
@@ -25,3 +25,31 @@ def cmdtest_unicast(ser,n,dest):
     print('Payload: {}'.format(payload))
     print('-----')
   
+# Local AT Command Set
+#   at - AT parameter to set (in string)
+#   val - AT parameter value (in bytes)
+def cmdtest_local_atset(ser,at,val):
+  from packet_encode import atcom_set
+  from packet_decode import rxpacket
+  tx_packet = atcom_set(at,val) 
+  print('Tx Packet: {}'.format(tx_packet))
+  print('-----')
+  ser.write(tx_packet)
+  status, payload = rxpacket(ser)
+  print('Payload: {}'.format(payload)) 
+  print('-----')
+
+# Local AT Command Query
+#   at - AT parameter to set (in string)
+def cmdtest_local_atquery(ser,at):
+  from packet_encode import atcom_query
+  from packet_decode import rxpacket
+  tx_packet = atcom_query(at) 
+  print('Tx Packet: {}'.format(tx_packet))
+  print('-----')
+  ser.write(tx_packet)
+  status, payload = rxpacket(ser)
+  print('Payload: {}'.format(payload)) 
+  print('-----')
+
+
