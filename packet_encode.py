@@ -173,4 +173,20 @@ def gen_txreq(fid,dest,brad,opts,data):
 
   return bytestr
 
-  
+# Attach header and checksum
+#   bytestr - packet contents
+def gen_headtail(bytestr):
+
+  # Compute checksum
+  checksum = b'\x00'
+  for i in range(len(bytestr)):
+    checksum = byte_sum(checksum,(bytestr[i]).to_bytes(1,'big'))
+  checksum = byte_diff0xff(checksum)
+
+  # Generate length
+  length = (len(bytestr)).to_bytes(2,'big')
+
+  # Append headers and checksum
+  bytestr = b'\x7e' + length + bytestr + checksum
+
+  return bytestr
