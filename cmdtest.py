@@ -28,6 +28,21 @@ def cmdtest_remote_unicast(ser,n,dest):
     pd.decode_payload(payload)
     print('-----')
   
+# Debug Unicast 2
+def cmdtest_remote_unicast2(ser,n,dest):
+  from packet_encode import debug_unicast2
+  from packet_decode import rxpacket
+  tx_packet = debug_unicast2(n,dest)
+  print('Tx Packet: {}'.format(mf.hexstr(tx_packet)))
+  print('-----')
+  ser.write(tx_packet)
+  for i in range(n+1):
+    status, payload = rxpacket(ser)
+    print('Payload: {}'.format(mf.hexstr(payload)))
+    pd.decode_payload(payload)
+    print('-----')
+ 
+
 # Local AT Command Set
 #   at - AT parameter to set (in string)
 #   val - AT parameter value (in bytes)

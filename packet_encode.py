@@ -3,6 +3,7 @@
 from misc_func import byte_sum
 from misc_func import byte_diff0xff
 from misc_func import hexstr2byte
+from misc_func import hexstr
 
 # AT Command Query
 #   param - AT parameter (String format)
@@ -188,5 +189,21 @@ def gen_headtail(bytestr):
 
   # Append headers and checksum
   bytestr = b'\x7e' + length + bytestr + checksum
+
+  return bytestr
+
+# Debug command: Unicast (version 2)
+#   n - number of unicast transmissions
+#   dest - 64-bit destination address (in bytes)
+def debug_unicast2(n,dest):
+
+  if n > 255:
+    print('Error: number of transmissions exceeds limit')
+    return b''
+
+  data = b'DU' + (n).to_bytes(1,'big')
+  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data));
+
+  bytestr = gen_headtail(payload)
 
   return bytestr
