@@ -25,6 +25,7 @@ def cmdtest_remote_unicast(ser,n,dest):
   for i in range(n+1):
     status, payload = rxpacket(ser)
     print('Payload: {}'.format(mf.hexstr(payload)))
+    pd.decode_payload(payload)
     print('-----')
   
 # Local AT Command Set

@@ -55,16 +55,47 @@ def decode_atcomres(payload):
   print('AT Command Response frame (0x88)')
   print('  Frame ID: {}'.format(hex(fid)))
   print('  AT command: {}{}'.format(athi.decode(),atlo.decode()))
-  print('  Command status: {}({})'.format(status,status_dict[status]))
+  print('  Command status: {} ({})'.format(status,status_dict[status]))
 
   # Presence of Command Data
   if len(payload) > 5:
     print('  Command data: 0x{}'.format(hexstr(payload[5:])))
+
+# Decode Transmit Status frame 0x8b
+def decode_txstat(payload):
+
+  fid = payload[1]
+  dest16 = hexstr(payload[2:4])
+  txretry = payload[4]
+  delivery = payload[5]
+  delivery_dict = {
+    0x00 : 'Success',
+    0x01 : 'MAC ACK failure',
+    0x02 : 'Collision avoidance failure',
+    0x21 : 'Network ACK failure',
+    0x25 : 'Route not found',
+    0x31 : 'Internal resource error',
+    0x32 : 'Internal error'
+  }
+  discovery = payload[6]
+  discovery_dict = {
+    0x00 : 'No discovery overhead',
+    0x02 : 'Route discovery'
+  }
+
+  print('Transmit Status frame (0x8b)')
+  print('  Frame ID: {}'.format(hex(fid)))
+  print('  16-bit dest addr: {}'.format(dest16))
+  print('  Tx retry count: {}'.format(txretry))
+  print('  Delivery status: {} ({})'.format(delivery,delivery_dict[delivery]))
+  print('  Discovery status: {} ({})'.format(discovery,discovery_dict[delivery]))
 
 # Decode generic payload
 def decode_payload(payload):
 
   if payload[0] == 0x88:
     decode_atcomres(payload)
+  elif payload[0] == 0x8b:
+    decode_txstat(payload)
   else:
     print('Error: Unknown XBee API frame type')
