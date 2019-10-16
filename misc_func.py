@@ -22,3 +22,18 @@ def hexstr(bytestream):
       hexchar = hexchar[0:2] + '0' + hexchar[2]
     hexstream = hexstream + hexchar[2:]
   return hexstream
+
+# Convert hex string to byte stream
+def bytestr(hexstream):
+
+  if (len(hexstream)%2) != 0:
+    print('Error converting hex string to bytes: odd number of chars')
+    return b'' 
+
+  bytestream = b''
+  for i in range(len(hexstream)):
+    if (i%2)==0:
+      curr_int = int(hexstream[i:(i+2)],16)
+      bytestream = bytestream + (curr_int).to_bytes(1,'big')
+
+  return bytestream

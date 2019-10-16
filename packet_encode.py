@@ -136,3 +136,17 @@ def debug_unicast(n,dest):
   bytestr = bytestr + checksum
 
   return bytestr  
+
+# Generic Transmit request
+#   fid - Frame ID (hex string, 1 byte)
+#   dest - 64-bit dest address (hex string, 8 bytes)
+#   brad - Broadcat radius (hex string, 1 byte)
+#   opts - Transmit options (hex string, 1 byte)
+#   data - RF data (hex string, variable length)
+def gen_txreq(fid,dest,brad,opts,data):
+
+  
+
+  return bytestr
+
+  
