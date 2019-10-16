@@ -88,7 +88,28 @@ def decode_txstat(payload):
   print('  16-bit dest addr: {}'.format(dest16))
   print('  Tx retry count: {}'.format(txretry))
   print('  Delivery status: {} ({})'.format(delivery,delivery_dict[delivery]))
-  print('  Discovery status: {} ({})'.format(discovery,discovery_dict[delivery]))
+  print('  Discovery status: {} ({})'.format(discovery,discovery_dict[discovery]))
+
+# Decode Receive Packet frame 0x90
+def decode_rxpacket(payload):
+
+  src = hexstr(payload[1:9])
+  res = hexstr(payload[9:11])
+  rxopt = payload[11]
+  rxopt_dict = {
+    0x01 : 'Packet acknowledged',
+    0x02 : 'Packet was a broadcast packet'
+  }
+  data = hexstr(payload[12:])
+
+  print('Receive Packet frame (0x90)')
+  print('  64-bit source addr: {}'.format(src))
+  print('  Reserved: {}'.format(res))
+  if rxopt in rxopt_dict:
+    print('  Rx options: {} ({})'.format(rxopt,rxopt_dict[rxopt]))
+  else:
+    print('  Rx options: ({})'.format(hex(rxopt)))
+  print('  Rx data: 0x{} ({})'.format(data,payload[12:]))
 
 # Decode generic payload
 def decode_payload(payload):
@@ -97,5 +118,7 @@ def decode_payload(payload):
     decode_atcomres(payload)
   elif payload[0] == 0x8b:
     decode_txstat(payload)
+  elif payload[0] == 0x90:
+    decode_rxpacket(payload)
   else:
     print('Error: Unknown XBee API frame type')
