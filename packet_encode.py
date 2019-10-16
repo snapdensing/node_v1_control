@@ -2,6 +2,7 @@
 
 from misc_func import byte_sum
 from misc_func import byte_diff0xff
+from misc_func import hexstr2byte
 
 # AT Command Query
 #   param - AT parameter (String format)
@@ -145,7 +146,30 @@ def debug_unicast(n,dest):
 #   data - RF data (hex string, variable length)
 def gen_txreq(fid,dest,brad,opts,data):
 
-  
+  if len(fid) != 2:
+    print('Error generating tx req: Frame ID')
+    return b'' 
+  bytestr = b'\x10' + hexstr2byte(fid)
+
+  if len(dest) != 16:
+    print('Error generating tx req: 64-bit dest addr') 
+    return bytestr
+  bytestr = bytestr + hexstr2byte(dest) + b'\xff\xfe'
+
+  if len(brad) != 2:
+    print('Error generating tx req: Broadcast radius')
+    return bytestr
+  bytestr = bytestr + hexstr2byte(brad)
+
+  if len(opts) != 2:
+    print('Error generating tx req: Transmit options') 
+    return bytestr
+  bytestr=  bytestr + hexstr2byte(opts)
+
+  if (len(data)%2) != 0:
+    print('Error generating tx req: RF data')
+    return bytestr
+  bytestr=  bytestr + hexstr2byte(data)
 
   return bytestr
 

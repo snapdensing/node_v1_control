@@ -24,7 +24,7 @@ def hexstr(bytestream):
   return hexstream
 
 # Convert hex string to byte stream
-def bytestr(hexstream):
+def hexstr2byte(hexstream):
 
   if (len(hexstream)%2) != 0:
     print('Error converting hex string to bytes: odd number of chars')
