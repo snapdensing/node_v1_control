@@ -1,6 +1,7 @@
 # Functions for testing XBee using the interactive python terminal
 
 import serial
+import packet_decode as pd
 
 # Configure remote node address
 def cmdtest_remoteaddr():
@@ -38,6 +39,7 @@ def cmdtest_local_atset(ser,at,val):
   status, payload = rxpacket(ser)
   print('Payload: {}'.format(payload)) 
   print('-----')
+  return payload
 
 # Local AT Command Query
 #   at - AT parameter to set (in string)
@@ -50,6 +52,8 @@ def cmdtest_local_atquery(ser,at):
   ser.write(tx_packet)
   status, payload = rxpacket(ser)
   print('Payload: {}'.format(payload)) 
+  pd.decode_payload(payload)
   print('-----')
+  #return payload
 
 
