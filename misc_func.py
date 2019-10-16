@@ -12,3 +12,13 @@ def byte_sum(ba1, ba2):
 def byte_diff0xff(x):
   diff = int.from_bytes(b'\xff','big') - int.from_bytes(x,'big')
   return (diff).to_bytes(1,'big')
+
+# Convert byte stream to hex string
+def hexstr(bytestream):
+  hexstream = ''
+  for i in range(len(bytestream)):
+    hexchar = hex(bytestream[i])
+    if len(hexchar) == 3:
+      hexchar = hexchar[0:2] + '0' + hexchar[2]
+    hexstream = hexstream + hexchar[2:]
+  return hexstream

@@ -1,5 +1,6 @@
 from misc_func import byte_sum
 from misc_func import byte_diff0xff
+from misc_func import hexstr
 
 # Receive XBee API frame
 def rxpacket(ser):
@@ -51,17 +52,15 @@ def decode_atcomres(payload):
     3 : 'Invalid parameter'
   }
 
-  # Presence of Command Data
-#  if len(payload) > 5:
-#    datalen = len(payload) - 5
-#    for i in range(datalen):
-      
-  
   print('AT Command Response frame (0x88)')
   print('  Frame ID: {}'.format(hex(fid)))
   print('  AT command: {}{}'.format(athi.decode(),atlo.decode()))
   print('  Command status: {}({})'.format(status,status_dict[status]))
-  
+
+  # Presence of Command Data
+  if len(payload) > 5:
+    print('  Command data: 0x{}'.format(hexstr(payload[5:])))
+
 # Decode generic payload
 def decode_payload(payload):
 
