@@ -192,7 +192,7 @@ def gen_headtail(bytestr):
 
   return bytestr
 
-# Debug command: Unicast (version 2)
+# Debug command: Remote Unicast (version 2)
 #   n - number of unicast transmissions
 #   dest - 64-bit destination address (in bytes)
 def debug_unicast2(n,dest):
@@ -207,3 +207,23 @@ def debug_unicast2(n,dest):
   bytestr = gen_headtail(payload)
 
   return bytestr
+
+# Debug command: Remote Change channel
+#   ch - channel (in bytes)
+#   dest - 64-bit destination address (in bytes)
+def debug_channel(ch,dest):
+  data = b'DC' + ch
+  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data)); 
+  bytestr = gen_headtail(payload)
+  return bytestr
+
+# Debug command: Remote Change power level
+#   pow - power level (in bytes)
+#   dest - 64-bit destination address (in bytes)
+def debug_power(pow,dest):
+  data = b'DP' + pow
+  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data)); 
+  bytestr = gen_headtail(payload)
+  return bytestr
+
+

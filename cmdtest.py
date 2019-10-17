@@ -2,6 +2,7 @@
 
 import serial
 import packet_decode as pd
+import packet_encode as pe
 import misc_func as mf
 
 # Configure remote node address
@@ -25,7 +26,10 @@ def cmdtest_remote_unicast(ser,n,dest):
   for i in range(n+1):
     status, payload = rxpacket(ser)
     print('Payload: {}'.format(mf.hexstr(payload)))
-    pd.decode_payload(payload)
+    status = pd.decode_payload(payload)
+    if status != 0:
+      print('Aborting listen')
+      return 1
     print('-----')
   
 # Debug Unicast 2
@@ -59,7 +63,7 @@ def cmdtest_local_atset(ser,at,val):
   print('-----')
 
 # Local AT Command Query
-#   at - AT parameter to set (in string)
+#   at - AT parameter to query (in string)
 def cmdtest_local_atquery(ser,at):
   from packet_encode import atcom_query
   from packet_decode import rxpacket
@@ -72,4 +76,27 @@ def cmdtest_local_atquery(ser,at):
   pd.decode_payload(payload)
   print('-----')
 
+# Remote change channel
+#   ch - new channel (in bytes)
+#   dest - destination (in bytes)
+def cmdtest_remote_setchannel(ser,ch,dest):
+  tx_packet = pe.debug_channel(ch,dest)
+  print('Tx Packet: {}'.format(mf.hexstr(tx_packet)))
+  print('-----')
+  ser.write(tx_packet)
+  status, payload = pd.rxpacket(ser)
+  pd.decode_payload(payload)
+  print('-----')
 
+# Remote change power level (in bytes)
+#   pow - new power level (in bytes)
+#   dest - destination (in bytes)
+def cmdtest_remote_setpower(ser,pow,dest):
+  tx_packet = pe.debug_power(pow,dest)
+  print('Tx Packet: {}'.format(mf.hexstr(tx_packet)))
+  print('-----')
+  ser.write(tx_packet)
+  status, payload = pd.rxpacket(ser)
+  pd.decode_payload(payload)
+  print('-----')
+  

@@ -1,0 +1,18 @@
+Remote node debug commands:
+
+1. Broadcast (DB)
+2. Unicast (DU)
+3. Change sampling period (DT)
+4. Change power level (DP)
+5. Change channel (DC)
+
+Miscellaneous Functions (misc_func.py)
+  byte byte_sum(byte ba1, byte ba2)
+  byte byte_diff0xff(byte x)
+  str hexstr(bytes bytestream)
+  bytes hexstr2byte(str hexstream)
+
+Packet encoding (packet_encode.py)
+  bytes gen_txreq(str fid, str dest, str brad, str opts, str data)
+    -> all str in hexadecimal
+  bytes gen_headtail(bytes bytestr)

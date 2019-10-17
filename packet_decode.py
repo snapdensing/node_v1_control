@@ -90,6 +90,11 @@ def decode_txstat(payload):
   print('  Delivery status: {} ({})'.format(delivery,delivery_dict[delivery]))
   print('  Discovery status: {} ({})'.format(discovery,discovery_dict[discovery]))
 
+  if delivery == 0:
+    return 0
+  else:
+    return 1
+
 # Decode Receive Packet frame 0x90
 def decode_rxpacket(payload):
 
@@ -114,11 +119,16 @@ def decode_rxpacket(payload):
 # Decode generic payload
 def decode_payload(payload):
 
+  # Set to 0 if transmit delivery status is success
+  status = 0
+
   if payload[0] == 0x88:
     decode_atcomres(payload)
   elif payload[0] == 0x8b:
-    decode_txstat(payload)
+    status = decode_txstat(payload)
   elif payload[0] == 0x90:
     decode_rxpacket(payload)
   else:
     print('Error: Unknown XBee API frame type')
+
+  return status
