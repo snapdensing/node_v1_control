@@ -202,7 +202,7 @@ def debug_unicast2(n,dest):
     return b''
 
   data = b'DU' + (n).to_bytes(1,'big')
-  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data));
+  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data))
 
   bytestr = gen_headtail(payload)
 
@@ -213,7 +213,7 @@ def debug_unicast2(n,dest):
 #   dest - 64-bit destination address (in bytes)
 def debug_channel(ch,dest):
   data = b'DC' + ch
-  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data)); 
+  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data)) 
   bytestr = gen_headtail(payload)
   return bytestr
 
@@ -222,8 +222,23 @@ def debug_channel(ch,dest):
 #   dest - 64-bit destination address (in bytes)
 def debug_power(pow,dest):
   data = b'DP' + pow
-  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data)); 
+  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data)) 
   bytestr = gen_headtail(payload)
   return bytestr
 
+# Command: Start
+#   period - sampling period (in int)
+#   dest - 64-bit destination address (in bytes)
+def start_sensing(period,dest):
+  data = b'S' + (period).to_bytes(1,'big')
+  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data))
+  bytestr = gen_headtail(payload)
+  return bytestr
 
+# Command: Stop
+#   dest - 64-bit destination address (in bytes)
+def stop_sensing(dest):
+  data = b'X'
+  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data))
+  bytestr = gen_headtail(payload)
+  return bytestr 

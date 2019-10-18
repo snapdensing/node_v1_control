@@ -3,8 +3,11 @@ Remote node debug commands:
 1. Broadcast (DB)
 2. Unicast (DU)
 3. Change sampling period (DT)
+   - query sampling period (Dt)
 4. Change power level (DP)
+   - query power level (Dp)
 5. Change channel (DC)
+   - query channel (Dc)
 
 Miscellaneous Functions (misc_func.py)
   byte byte_sum(byte ba1, byte ba2)

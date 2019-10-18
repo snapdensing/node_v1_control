@@ -88,7 +88,7 @@ def cmdtest_remote_setchannel(ser,ch,dest):
   pd.decode_payload(payload)
   print('-----')
 
-# Remote change power level (in bytes)
+# Remote change power level 
 #   pow - new power level (in bytes)
 #   dest - destination (in bytes)
 def cmdtest_remote_setpower(ser,pow,dest):
@@ -100,3 +100,37 @@ def cmdtest_remote_setpower(ser,pow,dest):
   pd.decode_payload(payload)
   print('-----')
   
+# Remote start signal
+#  period - sampling period (in int)
+def cmdtest_remote_start(ser,period,dest):
+  tx_packet = pe.start_sensing(period,dest)
+  print('Sending start signal')
+  print('Tx Packet: {}'.format(mf.hexstr(tx_packet)))
+  print('-----')
+  ser.write(tx_packet)
+  status, payload = pd.rxpacket(ser)
+  pd.decode_payload(payload)
+  print('-----')
+
+# Listen to transmissions
+def cmdtest_listen(ser):
+  print('Listening to transmissions')
+  print('-----')
+  while 1:
+    status, payload = pd.rxpacket(ser)
+    print('Payload: {}'.format(mf.hexstr(payload)))
+    status = pd.decode_payload(payload)
+    print('-----')
+ 
+# Remote stop signal
+def cmdtest_remote_stop(ser,dest):
+  tx_packet = pe.stop_sensing(dest)
+  print('Sending stop signal')
+  print('Tx Packet: {}'.format(mf.hexstr(tx_packet)))
+  print('-----')
+  ser.write(tx_packet)
+  status, payload = pd.rxpacket(ser)
+  pd.decode_payload(payload)
+  print('-----')
+
+
