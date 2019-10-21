@@ -6,8 +6,13 @@ import packet_encode as pe
 import misc_func as mf
 
 # Configure remote node address
-def cmdtest_remoteaddr():
-  return b'\x00\x13\xa2\x00\x40\xbf\x1f\x4a'
+def cmdtest_remoteaddr(sel):
+  addr_dict = {
+    0 : b'\x00\x13\xa2\x00\x40\xbf\x1f\x4a',
+    1 : b'\x00\x13\xa2\x00\x40\x9a\x0a\x81',
+    2 : b'\x00\x13\xa2\x00\x40\xbf\x1f\x4b'
+  }
+  return addr_dict[sel]
 
 # Configure serial
 def cmdtest_uartsetup():
@@ -133,4 +138,13 @@ def cmdtest_remote_stop(ser,dest):
   pd.decode_payload(payload)
   print('-----')
 
-
+# Remote change aggregator address
+def cmdtest_remote_setaddr(ser,newaddr,dest):
+  tx_packet = pe.debug_setaddr(newaddr,dest)
+  print('Sending Change aggregator address')
+  print('Tx Packet: {}'.format(mf.hexstr(tx_packet)))
+  print('-----')
+  ser.write(tx_packet)
+  status, payload = pd.rxpacket(ser)
+  pd.decode_payload(payload)
+  print('-----')

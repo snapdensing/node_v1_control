@@ -242,3 +242,12 @@ def stop_sensing(dest):
   payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data))
   bytestr = gen_headtail(payload)
   return bytestr 
+
+# Command: Change aggregator address
+#   dest - 64-bit destination (remote) address (in bytes)
+#   newaddr - new 64-bit aggregator address (in bytes)
+def debug_setaddr(newaddr,dest):
+  data = b'DA' + newaddr
+  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data))
+  bytestr = gen_headtail(payload)
+  return bytestr
