@@ -251,3 +251,20 @@ def debug_setaddr(newaddr,dest):
   payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data))
   bytestr = gen_headtail(payload)
   return bytestr
+
+# Command: Remote Query parameter
+#   atcom - 2-character string for AT parameter
+#         - 1-character string for MSP parameter
+def debug_query(atcom,dest):
+  command_dict = {
+    'PL' : b'QP',
+    'CH' : b'QC',
+    'A'  : b'QA',
+    'T'  : b'QT'
+  }
+  data = command_dict[atcom]
+  print('data: {}({})'.format(data,type(data)))
+  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data))
+  bytestr = gen_headtail(payload)
+  return bytestr
+

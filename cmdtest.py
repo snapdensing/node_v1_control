@@ -148,3 +148,18 @@ def cmdtest_remote_setaddr(ser,newaddr,dest):
   status, payload = pd.rxpacket(ser)
   pd.decode_payload(payload)
   print('-----')
+
+# Remote query parameter
+def cmdtest_remote_query(ser,atcom,dest):
+  tx_packet = pe.debug_query(atcom,dest)
+  print('Sending remote query parameter')
+  print('Tx Packet : {}'.format(mf.hexstr(tx_packet)))
+  print('----')
+  ser.write(tx_packet)
+  status, payload = pd.rxpacket(ser)
+  pd.decode_payload(payload)
+  print('----')
+  print('-> Response')
+  status, payload = pd.rxpacket(ser)
+  pd.decode_payload(payload)
+  print('----')
