@@ -61,6 +61,11 @@ def decode_atcomres(payload):
   if len(payload) > 5:
     print('  Command data: 0x{}'.format(hexstr(payload[5:])))
 
+  if status == 0:
+    return 0
+  else:
+    return 1
+
 # Decode Transmit Status frame 0x8b
 def decode_txstat(payload):
 
@@ -123,7 +128,7 @@ def decode_payload(payload):
   status = 0
 
   if payload[0] == 0x88:
-    decode_atcomres(payload)
+    status = decode_atcomres(payload)
   elif payload[0] == 0x8b:
     status = decode_txstat(payload)
   elif payload[0] == 0x90:

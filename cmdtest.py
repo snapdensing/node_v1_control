@@ -14,6 +14,11 @@ def cmdtest_remoteaddr(sel):
   }
   return addr_dict[sel]
 
+# Address converter
+#   addr - hex string
+def cmdtest_addrconv(addrstr):
+  return mf.hexstr2byte(addrstr)
+
 # Configure serial
 def cmdtest_uartsetup():
   ser = serial.Serial('/dev/ttyUSB0')
@@ -76,7 +81,7 @@ def cmdtest_local_atquery(ser,at):
   print('Tx Packet: {}'.format(mf.hexstr(tx_packet)))
   print('-----')
   ser.write(tx_packet)
-  status, payload = rxpacket(ser)
+  status, payload = rxpacket(ser) 
   print('Payload: {}'.format(mf.hexstr(payload))) 
   pd.decode_payload(payload)
   print('-----')
@@ -157,8 +162,11 @@ def cmdtest_remote_query(ser,atcom,dest):
   print('----')
   ser.write(tx_packet)
   status, payload = pd.rxpacket(ser)
-  pd.decode_payload(payload)
+  status = pd.decode_payload(payload)
   print('----')
+  if status != 0:
+    print('Aborting listen')
+    return 1
   print('-> Response')
   status, payload = pd.rxpacket(ser)
   pd.decode_payload(payload)

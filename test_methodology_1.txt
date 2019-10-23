@@ -1,0 +1,7 @@
+import cmdtest as c
+ser = c.cmdtest_uartsetup()
+c.cmdtest_local_atquery(ser,'CH')
+c.cmdtest_local_atset(ser,'CH',b'\x0c')
+
+test = c.cmdtest_addrconv('0013a200XXXXXXXX')
+c.cmdtest_remote_query(ser,'PL',test)
