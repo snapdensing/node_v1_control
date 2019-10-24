@@ -20,7 +20,7 @@ print('Listening to channel 0x{}'.format(args.channel))
 
 ## Configure UART
 print('** Step 1. Configuring local UART **')
-ser = c.cmdtest_uartsetup()
+ser = c.cmdtest_uartsetup(0)
 
 ## Set local channel channel
 print('** Step 2. Setting local channel to 0x{} **'.format(args.channel))
