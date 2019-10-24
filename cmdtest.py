@@ -20,8 +20,9 @@ def cmdtest_addrconv(addrstr):
   return mf.hexstr2byte(addrstr)
 
 # Configure serial
-def cmdtest_uartsetup():
-  ser = serial.Serial('/dev/ttyUSB0')
+def cmdtest_uartsetup(n):
+  device = '/dev/ttyUSB' + str(n)
+  ser = serial.Serial(device)
   print(ser.name)
   return ser
 
@@ -171,3 +172,10 @@ def cmdtest_remote_query(ser,atcom,dest):
   status, payload = pd.rxpacket(ser)
   pd.decode_payload(payload)
   print('----')
+
+# Remote send arbitrary message
+def cmdtest_remote_send(ser,msg,dest):
+  tx_packet = pe.msgformer(msg,dest)
+  ser.write(tx_packet)
+  status, payload = pd.rxpacket(ser)
+  status = pd.decode_payload(payload)

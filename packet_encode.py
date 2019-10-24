@@ -268,3 +268,10 @@ def debug_query(atcom,dest):
   bytestr = gen_headtail(payload)
   return bytestr
 
+# Command: Remote form arbitrary message
+#   msg - arbitrary message (hex str)
+#   dest - 64-bit destination address (in bytes)
+def msgformer(msg,dest):
+  payload = gen_txreq('01',hexstr(dest),'00','00',msg)
+  bytestr = gen_headtail(payload)
+  return bytestr
