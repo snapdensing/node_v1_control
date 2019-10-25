@@ -179,3 +179,11 @@ def cmdtest_remote_send(ser,msg,dest):
   ser.write(tx_packet)
   status, payload = pd.rxpacket(ser)
   status = pd.decode_payload(payload)
+
+# Listen with logging
+def cmdtest_listenlog(ser,filename):
+  while 1:
+    fp = open(filename,"a")
+    status, payload = pd.rxpacket(ser)
+    pd.decodelog_payload(fp,payload)
+    fp.close()

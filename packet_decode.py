@@ -137,3 +137,28 @@ def decode_payload(payload):
     print('Error: Unknown XBee API frame type')
 
   return status
+
+# Decode generic payload and save to file
+def decodelog_payload(fp,payload):
+
+  from datetime import datetime
+
+  # Print raw payload
+  fp.write('{} Raw: 0x {}\n'.format(datetime.now(),payload))
+
+  if payload[0] == 0x90:
+    decodelog_rxpacket(fp,payload)
+    #fp.write('    Receive packet\n')
+  else:
+    fp.write('----Error: Unknown XBee API frame type') 
+
+# Decode Receive Packet frame 0x90 with logging
+def decodelog_rxpacket(fp,payload):
+
+  src = hexstr(payload[1:9])
+  res = hexstr(payload[9:11])
+  rxopt = payload[11]
+  data = hexstr(payload[12:])
+
+  # Format (hex): 90, src, res, rxopt, data
+  fp.write('---- 90, {}, {}, {}, {}\n'.format(src,res,rxopt,data)) 
