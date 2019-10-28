@@ -1,3 +1,9 @@
 *.swp
 __pycache__
 *.log
+*.aux
+*.gz
+*.out
+*.nav
+*.snm
+*.toc

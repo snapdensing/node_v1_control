@@ -1,0 +1,155 @@
+\part{Packet encode functions: Generic}
+
+Includes functions for formation of packets that conform to the XBee API format. Included in file \emph{packet\_encode.py}.
+
+\section{AT Command Query (atcom\_query)}
+Assemble a byte stream for querying AT parameter values. Use on local XBee device connected to serial.
+\subsection{Returns:}
+\begin{enumerate}
+\item \emph{bytestr} - (type: Bytes) Formatted XBee API frame (0x08: AT Command frame).
+\end{enumerate}
+\subsection{Arguments:}
+\begin{enumerate}
+\item \emph{param} - (type: String) Two-character AT parameter. 
+\end{enumerate}
+
+\section{AT Command Set (atcom\_set)}
+Assemble a byte stream for setting AT parameter values. Use on local XBee device connected to serial.
+\subsection{Returns:}
+\begin{enumerate}
+\item \emph{bytestr} - (type: Bytes) Formatted XBee API frame (0x08: AT Command frame).
+\end{enumerate}
+\subsection{Arguments:}
+\begin{enumerate}
+\item \emph{param} - (type: String) Two-character AT parameter.
+\item \emph{value} - (type: Bytes) New AT parameter value.
+\end{enumerate}
+
+\section{Transmit request (gen\_txreq)}
+Assemble a byte stream for a transmit request payload. Use on local XBee device connected to serial. Returned stream still needs to have headers and checksum appended (use in conjunction with gen\_headtail()). Refer to XBee documentation for details on arguments.
+\subsection{Returns:}
+\begin{enumerate}
+\item \emph{bytestr} - (type: Bytes) Semi-formatted XBee API frame (0x10: Transmit request frame).
+\end{enumerate}
+\subsection{Arguments:}
+\begin{enumerate}
+\item \emph{fid} - (type: String) 1-byte Frame ID in hexadecimal.
+\item \emph{dest} - (type: String) 8-byte Destination address in hexadecimal.
+\item \emph{brad} - (type: String) 1-byte Broadcast radius in hexadecimal.
+\item \emph{opts} - (type: String) 1-byte Transmit options in hexadecimal.
+\item \emph{data} - (type: String) Variable length payload in hexadecimal.
+\end{enumerate}
+
+\section{Generate Header and Checksum (gen\_headtail)}
+Append headers (0x7e and 2-byte length) and checksum to a generic payload. Use on local XBee device connected to serial.
+\subsection{Returns:}
+\begin{enumerate}
+\item \emph{bytestr} - (type: Bytes) XBee API frame.
+\end{enumerate}
+\subsection{Arguments:}
+\begin{enumerate}
+\item \emph{bytestr} - (type: Bytes) Assembled payload without headers and checksum.
+\end{enumerate}
+
+\section{Transmit request arbitrary payload (msgformer)}
+Generates a transmit request API frame with an arbitrary message. Other required fields are set to the following:
+\begin{itemize}
+\item Frame ID - 0x01
+\item Broadcast radius - 0x00
+\item Transmit options - 0x00
+\end{itemize}
+Assembled byte stream already contains appropriate headers and checksum.
+\subsection{Returns:}
+\begin{enumerate}
+\item \emph{bytestr} - (type: Bytes) XBee API frame.
+\end{enumerate}
+\subsection{Arguments:}
+\begin{enumerate}
+\item \emph{msg} - (type: String) Variable-length arbitrary message in hexadecimal.
+\item \emph{dest} - (type: Bytes) 8-byte address of destination node.
+\end{enumerate}
+
+\part{Packet encode functions: Specific}
+
+Includes functions for formation of command packets specific to the RESE2NSE node 1 firmware. Included in file \emph{packet\_encode.py}.
+
+\section{Remote node unicast (debug\_unicast)}
+Assembles command packet for issuing a unicast command to a remote node in standby/debug mode.
+\subsection{Returns:}
+\begin{enumerate}
+\item \emph{bytestr} - (type: Bytes) XBee API frame.
+\end{enumerate}
+\subsection{Arguments:}
+\begin{enumerate}
+\item \emph{n} - (type: Integer) Number of unicast packets remote node will transmit back.
+\item \emph{dest} - (type: Bytes) 8-byte address of remote node.
+\end{enumerate}
+
+\section{Remote node set channel (debug\_channel}
+Assembles command packet for changing the radio channel of a remote node. Command is processed by the MSP430.
+\subsection{Returns:}
+\begin{enumerate}
+\item \emph{bytestr} - (type: Bytes) XBee API frame.
+\end{enumerate}
+\subsection{Arguments:}
+\begin{enumerate}
+\item \emph{ch} - (type: Bytes) 1-byte new channel.
+\item \emph{dest} - (type: Bytes) 8-byte address of remote node.
+\end{enumerate}
+
+\section{Remote node set power level (debug\_power}
+Assembles command packet for changing the radio transmit power of a remote node. Command is processed by the MSP430.
+\subsection{Returns:}
+\begin{enumerate}
+\item \emph{bytestr} - (type: Bytes) XBee API frame.
+\end{enumerate}
+\subsection{Arguments:}
+\begin{enumerate}
+\item \emph{pow} - (type: Bytes) 1-byte new power level.
+\item \emph{dest} - (type: Bytes) 8-byte address of remote node.
+\end{enumerate}
+
+\section{Remote node start sensing (start\_sensing}
+Assembles command packet for transitioning from stanby/debug mode into sensing mode of a remote node.
+\subsection{Returns:}
+\begin{enumerate}
+\item \emph{bytestr} - (type: Bytes) XBee API frame.
+\end{enumerate}
+\subsection{Arguments:}
+\begin{enumerate}
+\item \emph{period} - (type: Integer) 1-byte sampling period.
+\item \emph{dest} - (type: Bytes) 8-byte address of remote node.
+\end{enumerate}
+
+\section{Remote node stop sensing (stop\_sensing}
+Assembles command packet for transitioning from sensing mode to stanby/debug mode of a remote node.
+\subsection{Returns:}
+\begin{enumerate}
+\item \emph{bytestr} - (type: Bytes) XBee API frame.
+\end{enumerate}
+\subsection{Arguments:}
+\begin{enumerate}
+\item \emph{dest} - (type: Bytes) 8-byte address of remote node.
+\end{enumerate}
+
+\section{Remote node query parameter (debug\_query}
+Assembles command packet for querying remote node parameters. This includes AT parameters (must be implemented in remote node firmware) and MSP430 parameters.
+\subsection{Returns:}
+\begin{enumerate}
+\item \emph{bytestr} - (type: Bytes) XBee API frame.
+\end{enumerate}
+\subsection{Arguments:}
+\begin{enumerate}
+\item \emph{atcom} - (type: String) Parameter to query.
+
+\begin{minipage}{0.5\textwidth}
+Supported parameters:
+\begin{enumerate}
+\item PL - power level
+\item CH - channel
+\item A - aggregator address
+\item T - sampling period
+\end{enumerate}
+\end{minipage}
+\item \emph{dest} - (type: Bytes) 8-byte address of remote node.
+\end{enumerate}
