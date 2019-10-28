@@ -1,0 +1,119 @@
+\part{Packet decode functions}
+Includes functions for receiving and decoding packets from XBee through UART.
+
+\section{Receive packet (rxpacket)}
+Read the UART buffer for an XBee API frame. Checks the frame for length and checksum and returns the payload sans headers and checksum.
+\subsection{Returns:}
+\begin{enumerate}
+\item success - (type: Integer) Returns a 1 for a successful read, 0 otherwise.
+\item payload - (type: Bytes) XBee API frame payload.
+\end{enumerate}
+\subsection{Arguments:}
+\begin{enumerate}
+\item ser - Serial interface returned from serial.Serial() function of pyserial.
+\end{enumerate}
+
+\section{Decode AT Command Response (decode\_atcomres)}
+Decodes AT Command Response (frame 0x88)payload from rxpacket(). Prints the following decoded fields to the console:
+\begin{itemize}
+\item Frame ID
+\item AT Command
+\item Command Status
+\item Command Data (if available)
+\end{itemize}
+\subsection{Returns:}
+\begin{enumerate}
+\item error - (type: Integer) Returns a 0 when the status field of the received packet is 0 ('OK'). Returns 1 otherwise.
+\end{enumerate}
+\subsection{Arguments:}
+\begin{enumerate}
+\item payload - (type: Bytes) XBee frame sans headers and checksum.
+\end{enumerate}
+
+\section{Decode Transmit Status (decode\_txstat)}
+Decodes Transmit Status (frame 0x8b) payload from rxpacket(). Prints the following decoded fields to the console:
+\begin{itemize}
+\item Frame ID
+\item 16-bit Destination Address
+\item Transmit Retry count
+\item Delivery status
+\item Discovery status
+\end{itemize}
+\subsection{Returns:}
+\begin{enumerate}
+\item error - (type: Integer) Returns a 0 when the delivery status field of the received packet is 0 ('OK'). Returns 1 otherwise.
+\end{enumerate}
+\subsection{Arguments:}
+\begin{enumerate}
+\item payload - (type: Bytes) XBee frame sans headers and checksum.
+\end{enumerate}
+
+\section{Decode Received Packet (decode\_rxpacket)}
+Decodes a received packet (frame 0x90) payload from rxpacket(). Prints the following decoded fields to the console:
+\begin{itemize}
+\item 64-bit source address
+\item Reserved field
+\item Receive Options
+\item Received Data
+\end{itemize}
+\subsection{Returns:}
+None
+\subsection{Arguments:}
+\begin{enumerate}
+\item payload - (type: Bytes) XBee frame sans headers and checksum.
+\end{enumerate}
+
+\section{Decode Payload (decode\_payload)}
+Parses the first byte of a payload and calls the appropriate decoding function. Currently supports the following XBee API frame types:
+\begin{itemize}
+\item AT Command Response (0x88)
+\item Transmit Status (0x8b)
+\item Received Packet (0x90)
+\end{itemize}
+\subsection{Returns:}
+\begin{itemize}
+\item status - (type: Integer) forwards returns of decode\_atcomres() and decode\_txstat(). Returns 0 otherwise.
+\end{itemize}
+\subsection{Arguments:}
+\begin{itemize}
+\item payload - (type: Bytes) XBee frame sans headers and checksum
+\end{itemize}
+
+\part{Packet Decode with logging}
+Decode functions which log to a file.
+
+\section{Decode Generic Payload (decodelog\_payload)}
+Decodes a generic payload and logs decoded fields to a file. Currently supports the following frames:
+\begin{itemize}
+\item Received packet (0x90)
+\end{itemize}
+The function prints a line (to a file) in the format "[f1] Raw: 0x [f2]" with the following fields:
+\begin{enumerate}
+\item Timestamp [f1]
+\item Raw payload in bytes [f2]
+\end{enumerate}
+The function then calls the corresponding decoding function that may print further parsed fields from the raw packet.
+
+\subsection{Returns:}
+None
+\subsection{Arguments:}
+\begin{enumerate}
+\item fp - (type: File pointer) Output log file.
+\item payload - (type: Bytes) XBee frame sans headers and checksum.
+\end{enumerate}
+
+\section{Decode Receive Packet (decodelog\_rxpacket)}
+Decodes a receive packet frame (0x90). The function prints a line (to a file) in the format "---- 90, [f1], [f2], [f3], [f4]" with the following fields:
+\begin{enumerate}
+\item 64-bit source address in hexadecimal [f1]
+\item Reserved field in hexadecimal [f2]
+\item Receive options in hexadecimal [f3]
+\item Received data in hexadecimal [f4]
+\end{enumerate}
+\subsection{Returns:}
+None
+\subsection{Arguments:}
+\begin{enumerate}
+\item fp - (type: File pointer) Output log file.
+\item payload - (type: Bytes) XBee frame sans headers and checksum.
+\end{enumerate}

@@ -85,7 +85,7 @@ Assembles command packet for issuing a unicast command to a remote node in stand
 \item \emph{dest} - (type: Bytes) 8-byte address of remote node.
 \end{enumerate}
 
-\section{Remote node set channel (debug\_channel}
+\section{Remote node set channel (debug\_channel)}
 Assembles command packet for changing the radio channel of a remote node. Command is processed by the MSP430.
 \subsection{Returns:}
 \begin{enumerate}
@@ -97,7 +97,7 @@ Assembles command packet for changing the radio channel of a remote node. Comman
 \item \emph{dest} - (type: Bytes) 8-byte address of remote node.
 \end{enumerate}
 
-\section{Remote node set power level (debug\_power}
+\section{Remote node set power level (debug\_power)}
 Assembles command packet for changing the radio transmit power of a remote node. Command is processed by the MSP430.
 \subsection{Returns:}
 \begin{enumerate}
@@ -109,7 +109,7 @@ Assembles command packet for changing the radio transmit power of a remote node.
 \item \emph{dest} - (type: Bytes) 8-byte address of remote node.
 \end{enumerate}
 
-\section{Remote node start sensing (start\_sensing}
+\section{Remote node start sensing (start\_sensing)}
 Assembles command packet for transitioning from stanby/debug mode into sensing mode of a remote node.
 \subsection{Returns:}
 \begin{enumerate}
@@ -121,7 +121,7 @@ Assembles command packet for transitioning from stanby/debug mode into sensing m
 \item \emph{dest} - (type: Bytes) 8-byte address of remote node.
 \end{enumerate}
 
-\section{Remote node stop sensing (stop\_sensing}
+\section{Remote node stop sensing (stop\_sensing)}
 Assembles command packet for transitioning from sensing mode to stanby/debug mode of a remote node.
 \subsection{Returns:}
 \begin{enumerate}
@@ -132,7 +132,7 @@ Assembles command packet for transitioning from sensing mode to stanby/debug mod
 \item \emph{dest} - (type: Bytes) 8-byte address of remote node.
 \end{enumerate}
 
-\section{Remote node query parameter (debug\_query}
+\section{Remote node query parameter (debug\_query)}
 Assembles command packet for querying remote node parameters. This includes AT parameters (must be implemented in remote node firmware) and MSP430 parameters.
 \subsection{Returns:}
 \begin{enumerate}
