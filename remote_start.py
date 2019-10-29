@@ -16,6 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("nodeaddr", help="Node address (8 byte hex str)")
 parser.add_argument("-c", "--channel", help="Channel (1 byte hex str)")
 parser.add_argument("-t", "--period", help="Sampling period (integer)")
+parser.add_argument("-p", "--portusb", help="USB Serial port number")
 
 args = parser.parse_args()
 
@@ -31,6 +32,11 @@ else:
 #  period = b'\x0a'
    period = 10
    print('Running default period')
+
+if args.portusb:
+  dev = int(args.portusb)
+else:
+  dev = 0
 
 ## Configure UART
 print('** Step 1. Configuring local UART **')

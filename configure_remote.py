@@ -17,6 +17,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("nodeaddr", help="Node address (64-bit)")
 parser.add_argument("-oc", "--oldchannel", help="Old channel (1 byte hex str)")
 parser.add_argument("-nc", "--newchannel", help="New channel (1 byte hex str)")
+parser.add_argument("-p", "--portusb", help="USB serial port number")
 
 args = parser.parse_args()
 
@@ -31,6 +32,11 @@ if args.newchannel:
   ch_new = mf.hexstr2byte(args.newchannel)
 else:
   ch_new = b'\x1a'
+
+if args.portusb:
+  dev = int(args.portusb)
+else:
+  dev = 0
 
 print('-- Switching channel from 0x{} to 0x{}'.format(mf.hexstr(ch_old),mf.hexstr(ch_new))) 
 print(' ')

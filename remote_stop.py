@@ -14,6 +14,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("nodeaddr", help="Node address (8 byte hex str)")
 parser.add_argument("-c", "--channel", help="Channel (1 byte hex str)")
+parser.add_argument("-p", "--portusb", help="USB Serial port number")
 
 args = parser.parse_args()
 
@@ -22,9 +23,14 @@ if args.channel:
 else:
   ch = b'\x1a'
 
+if args.portusb:
+  dev = int(args.portusb)
+else:
+  dev = 0
+
 ## Configure UART
 print('** Step 1. Configuring local UART **')
-ser = c.cmdtest_uartsetup(0)
+ser = c.cmdtest_uartsetup(dev)
 remote = c.cmdtest_addrconv(args.nodeaddr)
 
 ## Set channel

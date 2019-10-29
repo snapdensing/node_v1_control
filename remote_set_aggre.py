@@ -1,27 +1,22 @@
-# Send arbitrary message to remote
+# Send Change Aggregator address 
 # Arguments
 # - node address
-# - message
 # - channel
+# - new aggregator address
 
 import argparse
 import misc_func as mf
 import cmdtest as c
 import packet_decode as pd
 import packet_encode as pe
-#from datetime import datetime
-#from datetime import timedelta
-import time
 
 ## Parse arguments
 parser = argparse.ArgumentParser()
 
 parser.add_argument("nodeaddr", help="Node address (8 byte hex str)")
 parser.add_argument("-c", "--channel", help="Channel (1 byte hex str)")
-parser.add_argument("-m", "--message", help="Message (hex str)")
-parser.add_argument("-n", "--numtx", help="Number of transmissions")
-parser.add_argument("-d", "--delay", help="Delay in seconds")
-parser.add_argument("-p", "--portusb", help="USB Serial port number")
+parser.add_argument("-a", "--aggre", help="New aggregator (8 byte hex str)")
+parser.add_argument("-p", "--portusb", help="USB serial port")
 
 args = parser.parse_args()
 
@@ -30,23 +25,10 @@ if args.channel:
 else:
   ch = b'\x1a'
 
-if args.message: 
-  if (len(args.message)%2) != 0:
-    print('Invalid message')
-    quit()
-  message = args.message
+if args.aggre:
+  aggre_addr = args.aggre
 else:
-  message = mf.hexstr(b'DefaultMessage')
-
-if args.numtx:
-  n = int(args.numtx)
-else:
-  n = 1
-
-if args.delay:
-  d = int(args.delay)
-else:
-  d = 1
+  aggre_addr = '0013a200409a0a81'
 
 if args.portusb:
   dev = int(args.portusb)
@@ -73,8 +55,8 @@ if status != 0:
 
 tx_packet = pe.atcom_set('CH',ch)
 ser.write(tx_packet)
-status, payload = pd.rxpacket(ser) 
-status = pd.decode_payload(payload) 
+status, payload = pd.rxpacket(ser)
+status = pd.decode_payload(payload)
 if status != 0:
   print('-- Error setting AT parameter CH')
   quit()
@@ -91,16 +73,10 @@ if status != 0:
   quit()
 print(' ')
 
-# Send message
-print('** Step 3. Sending message to 0x{} **'.format(args.nodeaddr))
-for i in range(n):
-  #time_stop = datetime.now() + timedelta(seconds=5)
-  #print('time stop {}'.format(time_stop))
-  tx_packet = pe.msgformer(message,remote)
-  ser.write(tx_packet)
-  status, payload = pd.rxpacket(ser)
-  pd.decode_payload(payload)
-  #while (time_stop > datetime.now()):
-  #  print('now {}'.format(datetime.now()))
-  time.sleep(d)
-
+## Send stop command
+print('** Step 3. Sending Set Address (DA): 0x{} **'.format(aggre_addr))
+msg = mf.hexstr(b'DA') + aggre_addr 
+tx_packet = pe.msgformer(msg,remote)
+ser.write(tx_packet)
+status, payload = pd.rxpacket(ser)
+pd.decode_payload(payload)

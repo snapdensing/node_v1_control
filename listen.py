@@ -13,15 +13,21 @@ from datetime import datetime
 parser = argparse.ArgumentParser()
 
 parser.add_argument("channel", help="Channel (1 byte hex str)")
+parser.add_argument("-p", "--portusb", help="USB Serial port number")
 
 args = parser.parse_args()
+
+if args.portusb:
+  dev = int(args.portusb)
+else:
+  dev = 0
 
 print('Listening to channel 0x{}'.format(args.channel))
 
 ## Configure UART
 print('** Step 1. Configuring local UART **')
 #ser = c.cmdtest_uartsetup(0)
-ser = c.cmdtest_uartsetup(1)
+ser = c.cmdtest_uartsetup(dev)
 
 ## Set local channel channel
 print('** Step 2. Setting local channel to 0x{} **'.format(args.channel))
