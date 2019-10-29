@@ -5,8 +5,6 @@ from misc_func import hexstr
 # Receive XBee API frame
 def rxpacket(ser):
 
-  payload = b'\x00'
-
   # Header: 0x7e
   header = ser.read(1)
   if header != b'\x7e':
