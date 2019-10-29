@@ -70,5 +70,16 @@ print(' ')
 print('** Step 3. Sending stop command **')
 tx_packet = pe.stop_sensing(remote)
 ser.write(tx_packet)
-status, payload = pd.rxpacket(ser)
-pd.decode_payload(payload)
+
+# Number of packets to receive and decode before sending another stop signal
+timeout = 10
+timer = 0
+while(1):
+  status, payload = pd.rxpacket(ser)
+  success = pd.decode_stopack(payload,remote)
+  print('Success {}'.format(success))
+  if success == 1:
+    quit()
+  timer = timer + 1
+  if timer > timeout:
+    ser.write(tx_packet)

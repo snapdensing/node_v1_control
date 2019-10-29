@@ -151,8 +151,7 @@ def decodelog_payload(fp,payload):
     fp.write('----Error: Unknown XBee API frame type') 
 
 # Decode Receive Packet frame 0x90 with logging
-def decodelog_rxpacket(fp,payload):
-
+def decodelog_rxpacket(fp,payload): 
   src = hexstr(payload[1:9])
   res = hexstr(payload[9:11])
   rxopt = payload[11]
@@ -160,3 +159,20 @@ def decodelog_rxpacket(fp,payload):
 
   # Format (hex): 90, src, res, rxopt, data
   fp.write('---- 90, {}, {}, {}, {}\n'.format(src,res,rxopt,data)) 
+
+# Decode stop acknowledge
+def decode_stopack(payload,remote):
+  success = 0
+
+  if payload[0] == 0x90:
+    src = payload[1:9]
+    data = payload[12:]  
+    print('Source: {}'.format(src))
+    print('Data: {}'.format(data))
+    if (remote == src) & (data == b'XA'):
+      success = 1
+  else:
+    print('Received other API frame')
+
+  return success
+
