@@ -1,44 +1,47 @@
-# Configure XBee to listen for transmissions
-# Arguments:
-# - output log file
+# Send start signal
+# Arguments
+# - node address
 # - channel
+# - sampling rate
 
 import argparse
 import misc_func as mf
 import cmdtest as c
 import packet_decode as pd
 import packet_encode as pe
-from datetime import datetime
 
 ## Parse arguments
 parser = argparse.ArgumentParser()
 
-parser.add_argument("logfile", help="Log file")
+parser.add_argument("nodeaddr", help="Node address (8 byte hex str)")
 parser.add_argument("-c", "--channel", help="Channel (1 byte hex str)")
 parser.add_argument("-p", "--portusb", help="USB Serial port number")
+parser.add_argument("-o", "--parameter", help="Remote parameter")
 
 args = parser.parse_args()
-
-logfile = args.logfile
 
 if args.channel:
   ch = mf.hexstr2byte(args.channel)
 else:
-  ch = mf.hexstr2byte('1a')
+  ch = b'\x1a'
 
 if args.portusb:
   dev = int(args.portusb)
 else:
   dev = 0
 
-print('Listening to channel 0x{}'.format(ch))
+if args.parameter:
+  param = args.parameter
+else:
+  param = 'PL'
 
 ## Configure UART
 print('** Step 1. Configuring local UART **')
-ser = c.cmdtest_uartsetup(dev) 
+ser = c.cmdtest_uartsetup(0)
+remote = c.cmdtest_addrconv(args.nodeaddr)
 
-##Set local channel 
-print('** Step 2. Setting local channel to 0x{} **'.format(args.channel))
+## Set channel
+print('** Step 2. Setting local channel to 0x{} **'.format(mf.hexstr(ch)))
 tx_packet = pe.atcom_query('CH')
 ser.write(tx_packet)
 status, payload = pd.rxpacket(ser)
@@ -70,25 +73,27 @@ if status != 0:
   quit()
 print(' ')
 
-## Listen
-#c.cmdtest_listen(ser)
-newdir_flag = 0
-now = datetime.now()
-filename = logfile + '-' + str(now.year) + '-' + str(now.month) + '-' + str(now.day) + '-' + str(now.hour) + '-' + str(now.minute) + '.log'
+## Send start command
+print('** Step 3. Sending Remote query **')
 
-while 1:
+param_dict = {
+  'PL' : b'QP',
+  'A' : b'QA',
+  'T' : b'QT',
+  'WR' : b'DW'
+}
 
-  now = datetime.now()
-  if newdir_flag == 0:
-    if (now.hour==0) & (now.minute==0):
-      newdir_flag = 1
-      #filename = logfile + '-' + str(now.year) + '-' + str(now.month) + '-' + str(now.day) + '-' + str(now.hour) + '-' + str(now.minute) + '.log'
-      filename = logfile + '-' + str(now.year) + '-' + str(now.month) + '-' + str(now.day) + '-' + str(now.hour) + '-' + '00' + '.log'
-  else: 
-    if (now.hour==0) & (now.minute==1):
-      newdir_flag = 0
+if param in param_dict:
+  msg = mf.hexstr(param_dict[param])
+else:
+  print('Invalid parameter')
+  quit()
 
-  fp = open(filename,"a")
-  status, payload = pd.rxpacket(ser)
-  pd.decodelog_payload(fp,payload)
-  fp.close()
+print('Message (Hex): {}'.format(msg))
+tx_packet = pe.msgformer(msg,remote)
+ser.write(tx_packet)
+status, payload = pd.rxpacket(ser)
+pd.decode_payload(payload)
+
+status, payload = pd.rxpacket(ser)
+pd.decode_payload(payload)
