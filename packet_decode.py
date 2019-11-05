@@ -4,6 +4,7 @@ from misc_func import hexstr
 
 # Receive XBee API frame
 def rxpacket(ser):
+  payload = b''
 
   # Header: 0x7e
   header = ser.read(1)
@@ -35,6 +36,48 @@ def rxpacket(ser):
 
   print('Received XBee API frame w/ length {}'.format(length))
   return 1, payload
+
+# Receive XBee API frame (with buffer)
+def rxpacket_buffered(ser):
+  success = 0
+  
+  # Header(0x7e) + Length(2 bytes)
+  buffer = ser.read(3)
+
+  # Timeout check
+  if buffer == b'':
+    print('Serial read timeout - pd.rxpacket_buffered()')
+    return success, buffer
+
+  # Get entire packet
+  lengthb = buffer[1:3] 
+  length = int.from_bytes(lengthb,'big') 
+  if length == 0:
+    print('Error receiving packet: Zero length')
+    return success, buffer
+  buffer_new =  ser.read(length + 1)
+  if buffer_new == b'':
+    print('Serial read timeout - pd.rxpacket_buffered()')
+    return success, buffer
+  buffer = buffer + buffer_new
+  payload = buffer[3:-1]
+
+  # Compute payload checksum
+  checksum = 0
+  for i in range(length):
+    checksum = checksum + buffer[i+3]
+    # overflow check
+    if checksum > 255:
+      checksum = checksum - 256
+  checksumb = (checksum).to_bytes(1,'big')
+  checksumb = byte_diff0xff(checksumb)
+  if checksumb != (buffer[-1]).to_bytes(1,'big'):
+    print('Error receiving packet: Invalid checksum')
+    return success, payload
+
+  success = 1
+  print('Received XBee API frame w/ length {}'.format(length))
+  return success, payload
 
 # Decode AT Command Response frame 0x88
 def decode_atcomres(payload):
