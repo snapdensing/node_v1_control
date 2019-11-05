@@ -176,3 +176,68 @@ def remote_start(ser,remote,period):
             return 1
 
       success = 0
+
+# Set channel
+
+# Set node ID
+def remote_nodeid(ser,remote,id):
+  success = 0
+  maxlen = 20
+
+  length = len(id)
+  if length > maxlen:
+    print('Exceeded maximum node ID length')
+    return 0
+  length_b = (length).to_bytes(1,'big')
+
+  data = b'DI' + length_b + bytes(id,'ascii')
+  payload = pe.gen_txreq('01',remote,'00','00',mf.hexstr(data))
+  bytestr = pe.gen_headtail(payload)
+  ser.write(bytestr)
+
+  while success == 0:
+    success, payload = pd.rxpacket_buffered(ser)
+    if payload == b'':
+      print('Serial timeout')
+      return 0
+    else:
+      if success == 1:
+        if payload[0] == 0x8b:
+          error = pd.decode_txstat(payload)
+          if error == 0:
+            print('Remote node {} node ID set'.format(remote)) 
+            return 1
+
+      success = 0
+
+# Set node loc 
+def remote_nodeloc(ser,remote,loc):
+  success = 0
+  maxlen = 20
+
+  length = len(loc)
+  if length > maxlen:
+    print('Exceeded maximum node loc length')
+    return 0
+  length_b = (length).to_bytes(1,'big')
+
+  data = b'DL' + length_b + bytes(loc,'ascii')
+  payload = pe.gen_txreq('01',remote,'00','00',mf.hexstr(data))
+  bytestr = pe.gen_headtail(payload)
+  ser.write(bytestr)
+
+  while success == 0:
+    success, payload = pd.rxpacket_buffered(ser)
+    if payload == b'':
+      print('Serial timeout')
+      return 0
+    else:
+      if success == 1:
+        if payload[0] == 0x8b:
+          error = pd.decode_txstat(payload)
+          if error == 0:
+            print('Remote node {} node loc set'.format(remote)) 
+            return 1
+
+      success = 0
+
