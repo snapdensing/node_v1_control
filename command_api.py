@@ -241,3 +241,45 @@ def remote_nodeloc(ser,remote,loc):
 
       success = 0
 
+# Set remote node channel
+# Arguments:
+#   ser - Serial interface
+#   remote - (hex string) 64-bit remote node address
+#   channel - (int) channel
+def remote_channel(ser,remote,channel):
+  success = 0
+
+  # Arguments check
+  if len(remote) != 16:
+    print('Invalid remote node address')
+    return success
+  if (channel > 26) | (channel < 11):
+    print('Invalid XBee channel')
+    return success
+
+  remote_b = mf.hexstr2byte(remote)
+  channel_b = (channel).to_bytes(1,'big') 
+
+  bytestr = pe.debug_channel(channel_b,remote_b) 
+  ser.write(bytestr)
+
+  payload = b'\x00'
+  while payload[0] != 0x8b:
+    success, payload = pd.rxpacket_buffered(ser)
+    if payload == b'':
+      print('Serial timeout')
+      return 0
+    if success == 0:
+      print('Error receiving response from Transmit request')
+      return success
+    if payload[0] == 0x8b:
+      error = pd.decode_txstat(payload)
+      if error == 1:
+        print('Error reported by Transmit status')
+        return 0
+
+  print('Remote {} channel now set to {}'.format(remote,channel))
+  success = 1
+  return success
+
+
