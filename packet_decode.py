@@ -219,3 +219,19 @@ def decode_stopack(payload,remote):
 
   return success
 
+# Decode start acknowledge
+def decode_startack(payload,remote):
+  success = 0
+
+  if payload[0] == 0x90:
+    src = payload[1:9]
+    data = payload[12:]  
+    print('Source: {}'.format(src))
+    print('Data: {}'.format(data))
+    if (remote == src) & (data == b'SA'):
+      success = 1
+  else:
+    print('Received other API frame')
+
+  return success
+

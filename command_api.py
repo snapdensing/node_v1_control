@@ -152,7 +152,7 @@ def remote_stop(ser,remote):
 # Start node sensing
 # Returns 1 if success, 0 otherwise
 def remote_start(ser,remote,period):
-  success = 0
+  timeout_max = 5
 
   if period > 255:
     print('Invalid period')
@@ -162,20 +162,24 @@ def remote_start(ser,remote,period):
   bytestr = pe.start_sensing(period,remote_b)
   ser.write(bytestr)
 
-  while success == 0:
+  timeouts = 0
+  while 1:
     success, payload = pd.rxpacket_buffered(ser)
+
     if payload == b'':
-      print('Serial timeout')
-      return 0
+      print('Serial timeout, Sending stop again')
+      timeouts = timeouts + 1
+      ser.write(bytestr)
+
     else:
       if success == 1:
-        if payload[0] == 0x8b:
-          error = pd.decode_txstat(payload)
-          if error == 0:
-            print('Remote node {} started'.format(remote)) 
-            return 1
+        success = pd.decode_startack(payload,remote_b)
+        if success == 1:
+          print('Remote node {} started'.format(remote))
+          return success
 
-      success = 0
+    if timeouts == timeout_max:
+      return 0
 
 # Set channel
 
