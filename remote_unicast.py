@@ -31,7 +31,8 @@ else:
 
 ## Configure UART
 print('** Step 1. Configuring local UART **')
-ser = c.cmdtest_uartsetup(0)
+dev = 0
+ser = c.cmdtest_uartsetup(dev)
 remote = c.cmdtest_addrconv(args.nodeaddr)
 
 ## Set channel

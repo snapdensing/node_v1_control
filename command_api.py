@@ -282,4 +282,104 @@ def remote_channel(ser,remote,channel):
   success = 1
   return success
 
+# Set remote node power
+# Arguments:
+#   ser - Serial interface
+#   remote - (hex string) 64-bit remote node address
+#   power- (int) power 
+def remote_power(ser,remote,power):
+  success = 0
 
+  # Arguments check
+  if len(remote) != 16:
+    print('Invalid remote node address')
+    return success
+  if (power > 4) | (power < 0):
+    print('Invalid XBee power')
+    return success
+
+  remote_b = mf.hexstr2byte(remote)
+  power_b = (power).to_bytes(1,'big') 
+
+  bytestr = pe.debug_power(power_b,remote_b) 
+  ser.write(bytestr)
+
+  payload = b'\x00'
+  while payload[0] != 0x8b:
+    success, payload = pd.rxpacket_buffered(ser)
+    if payload == b'':
+      print('Serial timeout')
+      return 0
+    if success == 0:
+      print('Error receiving response from Transmit request')
+      return success
+    if payload[0] == 0x8b:
+      error = pd.decode_txstat(payload)
+      if error == 1:
+        print('Error reported by Transmit status')
+        return 0
+
+  print('Remote {} power now set to {}'.format(remote,power))
+  success = 1
+  return success
+
+# Remote Query
+# Arguments:
+#   ser - Serial interface
+#   remote - (hex string) 64-bit remote node address
+#   param - (string) parameter
+def remote_query(ser,remote,param):
+  success = 0
+
+  command_dict = {
+    'PL' : b'QP',
+    'CH' : b'QC',
+    'A'  : b'QA',
+    'T'  : b'QT',
+    'WR' : b'DW'
+  }
+
+  data = command_dict[param]
+  payload = pe.gen_txreq('01',remote,'00','00',mf.hexstr(data))
+  bytestr = pe.gen_headtail(payload)
+  ser.write(bytestr)
+
+  while success == 0:
+
+    success, payload = pd.rxpacket_buffered(ser)
+    if payload == b'':
+      print('Serial timeout')
+      return 0
+    if success == 0:
+      print('Error receiving response from Transmit request')
+      return success
+    if payload[0] == 0x8b:
+      error = pd.decode_txstat(payload)
+      if error == 1:
+        print('Error reported by transmit status')
+        return 0
+      else:
+        success = 1
+    else:
+      success = 0
+
+  # Read Transmitted values
+  success = 0
+
+  print('Remote node response:')
+
+  while success == 0:
+
+    success, payload = pd.rxpacket_buffered(ser)
+    #print('payload: {}'.format(payload))
+
+    if payload == b'':
+      print('Serial timeout')
+      return 0
+
+    if payload[0] == 0x90:
+      #print('-- received packet')
+      pd.decode_rxpacket(payload)
+      success = 1
+    else:
+      success = 0 
