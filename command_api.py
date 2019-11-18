@@ -167,7 +167,7 @@ def remote_start(ser,remote,period):
     success, payload = pd.rxpacket_buffered(ser)
 
     if payload == b'':
-      print('Serial timeout, Sending stop again')
+      print('Serial timeout, Sending start again')
       timeouts = timeouts + 1
       ser.write(bytestr)
 
@@ -180,8 +180,6 @@ def remote_start(ser,remote,period):
 
     if timeouts == timeout_max:
       return 0
-
-# Set channel
 
 # Set node ID
 def remote_nodeid(ser,remote,id):
@@ -388,3 +386,8 @@ def remote_query(ser,remote,param):
       success = 1
     else:
       success = 0 
+
+# Commit node settings to NVRAM
+def remote_wr(ser,remote):
+
+    remote_query(ser,remote,'WR')
