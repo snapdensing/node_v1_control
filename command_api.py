@@ -151,15 +151,21 @@ def remote_stop(ser,remote):
 
 # Start node sensing
 # Returns 1 if success, 0 otherwise
+# period = 0 means retain previous period
 def remote_start(ser,remote,period):
   timeout_max = 5
 
-  if period > 255:
+  #if period > 255:
+  if (period > 65535) | (period < 0):
     print('Invalid period')
     return 0
   remote_b = mf.hexstr2byte(remote)
 
-  bytestr = pe.start_sensing(period,remote_b)
+  if period != 0:
+    bytestr = pe.start_sensing(period,remote_b)
+  else:
+    bytestr = pe.start_sensing_ret(remote_b)
+
   ser.write(bytestr)
 
   timeouts = 0

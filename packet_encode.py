@@ -230,7 +230,23 @@ def debug_power(pow,dest):
 #   period - sampling period (in int)
 #   dest - 64-bit destination address (in bytes)
 def start_sensing(period,dest):
-  data = b'S' + (period).to_bytes(1,'big')
+
+  if period < 256:
+      period_b = (period).to_bytes(1,'big')
+  else:
+      period_b = (period).to_bytes(2,'big')
+
+  #data = b'S' + (period).to_bytes(1,'big')
+  data = b'S' + period_b
+  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data))
+  bytestr = gen_headtail(payload)
+  return bytestr
+
+# Command: Start (retain previous period)
+#   dest - 64-bit destination address (in bytes)
+def start_sensing_ret(dest):
+
+  data = b'S'
   payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data))
   bytestr = gen_headtail(payload)
   return bytestr
