@@ -1,6 +1,6 @@
 # Command API
 
-Python functions for configuring and controlling RESE2NSE v1 nodes (XBee). Code an be found in [command_api.py](command_api.py).
+Python functions for configuring and controlling RESE2NSE v1 nodes (XBee). Code an be found in [command_api.py](https://github.com/snapdensing/node_v1_control/blob/v1.1_dev/command_api.py).
 
 ## Local XBee (USB shield) Configuration
 - `config()`
