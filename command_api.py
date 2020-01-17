@@ -347,6 +347,7 @@ def remote_query(ser,remote,param):
     'WR' : b'DW',
     'S'  : b'QS',
     'F'  : b'QF',
+    'V'  : b'QV'
   }
 
   data = command_dict[param]
