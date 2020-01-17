@@ -345,7 +345,8 @@ def remote_query(ser,remote,param):
     'A'  : b'QA',
     'T'  : b'QT',
     'WR' : b'DW',
-    'S'  : b'QS'
+    'S'  : b'QS',
+    'F'  : b'QF',
   }
 
   data = command_dict[param]
@@ -396,4 +397,46 @@ def remote_query(ser,remote,param):
 # Commit node settings to NVRAM
 def remote_wr(ser,remote):
 
-    remote_query(ser,remote,'WR')
+  remote_query(ser,remote,'WR')
+
+# Set control flag
+# Arguments:
+#   ser - Serial interface
+#   remote - (hex string) 64-bit remote node address
+#   flag - (hex string) 8-bit control flag value
+def remote_flag(ser,remote,flag):
+  success = 0
+
+  # Arguments check
+  if len(remote) != 16:
+    print('Invalid remote node address')
+    return success
+  if len(flag) != 2:
+    print('Invalid flag')
+    return success
+
+  remote_b = mf.hexstr2byte(remote)
+  flag_b = mf.hexstr2byte(flag)
+
+  bytestr = pe.debug_flag(flag_b,remote_b)
+  ser.write(bytestr)
+    
+  payload = b'\x00'
+  while payload[0] != 0x8b:
+    success, payload = pd.rxpacket_buffered(ser)
+    if payload == b'':
+      print('Serial timeout')
+      return 0
+    if success == 0:
+      print('Error receiving response from Transmit request')
+      return success
+    if payload[0] == 0x8b:
+      error = pd.decode_txstat(payload)
+      if error == 1:
+        print('Error reported by Transmit status')
+        return 0
+
+  print('Remote {} flag now set to {}'.format(remote,flag))
+  success = 1
+  return success
+

@@ -291,3 +291,14 @@ def msgformer(msg,dest):
   payload = gen_txreq('01',hexstr(dest),'00','00',msg)
   bytestr = gen_headtail(payload)
   return bytestr
+
+# Debug command: Remote Change control flag
+#   flag - flag value (in bytes)
+#   dest - 64-bit destination address (in bytes)
+def debug_flag(flag,dest):
+  data = b'DF' + flag
+  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data)) 
+  bytestr = gen_headtail(payload)
+  return bytestr
+
+
