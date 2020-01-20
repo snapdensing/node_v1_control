@@ -79,19 +79,81 @@ Python functions for configuring and controlling RESE2NSE v1 nodes (XBee). Code 
   - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
 
 <a name="remote_nodeloc"></a>
-### `remote_nodeloc()`
+### `remote_nodeloc(ser, remote, loc)`
+- Changes the node location (ID) of a remote node.
+
+- Arguments:
+  - `ser` - (type: serial object) Serial object for local USB-connected XBee.
+  - `remote` - (type: string) Hexadecimal value of 64-bit remote node address.
+  - `loc` - (type: string) New node ID value.
+ 
+- Return values:
+
+- Example:
+  - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
+
 <a name="remote_channel"></a>
-### `remote_channel()`
+### `remote_channel(ser, remote, channel)`
+
+- Sets the XBee channel of a remote node.
+
+- Arguments:
+  - `ser` - (type: serial object) Serial object for local USB-connected XBee.
+  - `remote` - (type: string) Hexadecimal value of 64-bit remote node address.
+  - `channel` - (type: int) New XBee channel for remote node (Values allowed: 11 to 26)
+
+- Return value:
+  - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
+
 <a name="remote_power"></a>
-### `remote_power()`
+### `remote_power(ser, remote, power)`
+- Sets the XBee transmit power of a remote node.
+
+- Arguments:
+  - `ser` - (type: serial object) Serial object for local USB-connected XBee.
+  - `remote` - (type: string) Hexadecimal value of 64-bit remote node address.
+  - `power` - (type: int) New XBee transmit power for remote node (Values allowed: 0 to 4)
+
+- Return value:
+  - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
+
 <a name="remote_wr"></a>
-### `remote_wr()`
+### `remote_wr(ser, remote)`
+
+- Commits XBee internal parameters to XBee flash.
+
+- Arguments:
+  - `ser` - (type: serial object) Serial object for local USB-connected XBee.
+  - `remote` - (type: string) Hexadecimal value of 64-bit remote node address.
 
 ## Remote Node (XBee + MSP) Query and Control
 <a name="remote_query"></a>
-### `remote_query()`
+### `remote_query(ser, remote, param)`
+
+- Queries for MSP or XBee parameters of a remote node.
+
+- Arguments:
+  - `ser` - (type: serial object) Serial object for local USB-connected XBee.
+  - `remote` - (type: string) Hexadecimal value of 64-bit remote node address.
+  - `param` - (type: string) Parameter to query. The list of parameters are shown below.
+ 
+- Return value:
+  - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
+
+- Parameters (`param`):
+  - 'PL' - XBee transmit power. Node returns 'QP[power]', where [power] is 1-byte power value (0x00 to 0x04).
+  - 'CH' - XBee channel. Node returns 'QC[channel]', where [channel] is 1-byte channel value (0x0b to 0x1a).
+  - 'A' - Aggregator address. Node returns 'QA[address]', where [address] is an 8-byte value.
+  - 'T' - Node transmit/sensing period. Node returns 'QT[period]', where [period] is a 1 to 2 byte value.
+  - 'S' - Node transmit statistics. Node returns 'QS\[txnum][txfail]', where [txnum] is the number of transmissions made (2-bytes) and [txfail] is the number of failed transmissions (2-bytes). 
+  - 'F'
+  - 'V'
+  - 'WR'
+
 <a name="remote_start"></a>
 ### `remote_start()`
+
 <a name="remote_stop"></a>
 ### `remote_stop()`
+
 
