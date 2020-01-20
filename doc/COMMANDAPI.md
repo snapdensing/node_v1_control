@@ -1,6 +1,6 @@
 # Command API
 
-Python functions for configuring and controlling RESE2NSE v1 nodes (XBee). Code an be found in [command_api.py](https://github.com/snapdensing/node_v1_control/blob/v1.1_dev/command_api.py).
+Python functions for configuring and controlling RESE2NSE v1 nodes (XBee). Code can be found in [command_api.py](https://github.com/snapdensing/node_v1_control/blob/v1.1_dev/command_api.py).
 
 ## Contents:
 - Local XBee (USB Shield Configuration
@@ -73,10 +73,8 @@ Remote nodes can only be configured when they are in the idle/debug state (not s
   - `ser` - (type: serial object) Serial object for local USB-connected XBee.
   - `remote` - (type: string) Hexadecimal value of 64-bit remote node address.
   - `id` - (type: string) New node ID value.
- 
-- Return values:
 
-- Example:
+- Return values:
   - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
 
 <a name="remote_nodeloc"></a>
@@ -89,8 +87,6 @@ Remote nodes can only be configured when they are in the idle/debug state (not s
   - `loc` - (type: string) New node ID value.
  
 - Return values:
-
-- Example:
   - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
 
 <a name="remote_channel"></a>
