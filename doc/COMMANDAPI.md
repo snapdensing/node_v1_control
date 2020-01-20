@@ -40,6 +40,7 @@ Python functions for configuring and controlling RESE2NSE v1 nodes (XBee). Code 
   Configures device connected as `/dev/ttyUSB1` to transmit on channel 24 with maximum transmit power.
 
 ## Remote Node (XBee + MSP) Configuration
+Remote nodes can only be configured when they are in the idle/debug state (not sensing).
 
 <a name="remote_aggre"></a>
 ### `remote_aggre(ser, remote, addr)`
@@ -130,7 +131,7 @@ Python functions for configuring and controlling RESE2NSE v1 nodes (XBee). Code 
 <a name="remote_query"></a>
 ### `remote_query(ser, remote, param)`
 
-- Queries for MSP or XBee parameters of a remote node.
+- Queries for MSP or XBee parameters of a remote node. Remote nodes can only be queried if they are in the idle/debug state.
 
 - Arguments:
   - `ser` - (type: serial object) Serial object for local USB-connected XBee.
@@ -141,19 +142,40 @@ Python functions for configuring and controlling RESE2NSE v1 nodes (XBee). Code 
   - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
 
 - Parameters (`param`):
-  - 'PL' - XBee transmit power. Node returns 'QP[power]', where [power] is 1-byte power value (0x00 to 0x04).
-  - 'CH' - XBee channel. Node returns 'QC[channel]', where [channel] is 1-byte channel value (0x0b to 0x1a).
-  - 'A' - Aggregator address. Node returns 'QA[address]', where [address] is an 8-byte value.
-  - 'T' - Node transmit/sensing period. Node returns 'QT[period]', where [period] is a 1 to 2 byte value.
-  - 'S' - Node transmit statistics. Node returns 'QS\[txnum][txfail]', where [txnum] is the number of transmissions made (2-bytes) and [txfail] is the number of failed transmissions (2-bytes). 
-  - 'F'
-  - 'V'
-  - 'WR'
+  - `'PL'` - XBee transmit power. Node returns `'QPL[power]'`, where `[power]` is 1-byte power value (0x00 to 0x04).
+  - `'CH'` - XBee channel. Node returns `'QC[channel]'`, where `[channel]` is 1-byte channel value (0x0b to 0x1a).
+  - `'A'` - Aggregator address. Node returns `'QA[address]'`, where `[address]` is an 8-byte value.
+  - `'T'` - Node transmit/sensing period. Node returns `'QT[period]'`, where `[period]` is a 1 to 2 byte value.
+  - `'S'` - Node transmit statistics. Node returns `'QS[txnum][txfail]'`, where `[txnum]` is the number of transmissions made (2-bytes) and `[txfail]` is the number of failed transmissions (2-bytes). 
+  - `'F'` - Node MSP Control Flag register. Node returns `'QF[flag]'`, where `[flag]` is a 1-byte control flag register value.
+    - Control Flag register fields:
+      - bit 7 - Auto-start sensing flag. Auto-starts node into sensing state on boot when set to `0`.
+  - `'V'` - Node firmware version. Node returns `'QV[version]'`, where `[version]` is an ASCII-encoded string.
+  - `'WR'` - Performs an XBee parameter flash commit (same as [remote_wr()](#remote_wr). Node returns `QWR`.
 
 <a name="remote_start"></a>
-### `remote_start()`
+### `remote_start(ser, remote, period)`
+
+- Commands a remote node from idle/debug state to start sensing.
+
+- Arguments:
+  - `ser` - (type: serial object) Serial object for local USB-connected XBee.
+  - `remote` - (type: string) Hexadecimal value of 64-bit remote node address.
+  - `period` - (type: int) Sense/transmit period of the remote node. Allowed values are `0 to 65535`. If the value set is `0`, the remote node will retain its previously set period.
+ 
+- Return value:
+  - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
 
 <a name="remote_stop"></a>
-### `remote_stop()`
+### `remote_stop(ser, remote)`
+
+- Stops a remote node from sensing and transitions it to the idle/debug state.
+
+- Arguments:
+  - `ser` - (type: serial object) Serial object for local USB-connected XBee.
+  - `remote` - (type: string) Hexadecimal value of 64-bit remote node address.
+ 
+- Return value:
+  - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
 
 
