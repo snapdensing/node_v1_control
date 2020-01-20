@@ -3,7 +3,19 @@
 Python functions for configuring and controlling RESE2NSE v1 nodes (XBee). Code an be found in [command_api.py](https://github.com/snapdensing/node_v1_control/blob/v1.1_dev/command_api.py).
 
 ## Contents:
-- [config()](#config)
+- Local XBee (USB Shield Configuration
+  - [config()](#config)
+- Remote Node (XBee + MSP) Configuration
+  - [remote_aggre()](#remote_aggre)
+  - [remote_nodeid()](#remote_nodeid)
+  - [remote_nodeloc()](#remote_nodeloc)
+  - [remote_channel()](#remote_channel)
+  - [remote_power()](#remote_power)
+  - [remote_wr()](#remote_wr)
+- Remote Node (XBee + MSP) Query and Control
+  - [remote_query()](#remote_query)
+  - [remote_start()](#remote_start)
+  - [remote_stop()](#remote_stop)
 
 ## Local XBee (USB shield) Configuration
 
@@ -29,6 +41,7 @@ Python functions for configuring and controlling RESE2NSE v1 nodes (XBee). Code 
 
 ## Remote Node (XBee + MSP) Configuration
 
+<a name="remote_aggre"></a>
 ### `remote_aggre(ser, remote, addr)`
 
 - Changes the aggregator/sink node of a remote node.
@@ -50,6 +63,7 @@ Python functions for configuring and controlling RESE2NSE v1 nodes (XBee). Code 
   ```
   Sets the sink node of remote node `0x0013a200abcd1234` to `0x0013a20056785678`
 
+<a name="remote_nodeid"></a>
 ### `remote_nodeid(ser, remote, id)`
 
 - Changes the node ID of a remote node.
@@ -64,13 +78,20 @@ Python functions for configuring and controlling RESE2NSE v1 nodes (XBee). Code 
 - Example:
   - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
 
+<a name="remote_nodeloc"></a>
 ### `remote_nodeloc()`
+<a name="remote_channel"></a>
 ### `remote_channel()`
+<a name="remote_power"></a>
 ### `remote_power()`
+<a name="remote_wr"></a>
 ### `remote_wr()`
 
 ## Remote Node (XBee + MSP) Query and Control
+<a name="remote_query"></a>
 ### `remote_query()`
+<a name="remote_start"></a>
 ### `remote_start()`
+<a name="remote_stop"></a>
 ### `remote_stop()`
 
