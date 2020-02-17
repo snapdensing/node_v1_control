@@ -441,3 +441,48 @@ def remote_flag(ser,remote,flag):
   success = 1
   return success
 
+# Set period
+# Arguments:
+#   ser - Serial interface
+#   remote - (hex string) 64-bit remote node address
+#   period- (int) Sampling period 
+def remote_period(ser,remote,period):
+  success = 0
+
+  # Arguments check
+  if len(remote) != 16:
+    print('Invalid remote node address')
+    return success
+  if (period > 65535) | (period < 0):
+    print('Invalid period')
+    return 0
+
+  remote_b = mf.hexstr2byte(remote)
+
+  if period != 0:
+    bytestr = pe.start_sensing(period,remote_b)
+  else:
+    bytestr = pe.start_sensing_ret(remote_b)
+
+  bytestr = pe.debug_period(period,remote_b)
+  ser.write(bytestr)
+    
+  payload = b'\x00'
+  while payload[0] != 0x8b:
+    success, payload = pd.rxpacket_buffered(ser)
+    if payload == b'':
+      print('Serial timeout')
+      return 0
+    if success == 0:
+      print('Error receiving response from Transmit request')
+      return success
+    if payload[0] == 0x8b:
+      error = pd.decode_txstat(payload)
+      if error == 1:
+        print('Error reported by Transmit status')
+        return 0
+
+  print('Remote {} period now set to {}'.format(remote,period))
+  success = 1
+  return success
+

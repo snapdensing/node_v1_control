@@ -301,4 +301,17 @@ def debug_flag(flag,dest):
   bytestr = gen_headtail(payload)
   return bytestr
 
+# Debug command: Remote Change period
+#   period - sampling period (integer)
+#   dest - 64-bit destination address (in bytes)
+def debug_period(period,dest):
 
+  if period < 256:
+      period_b = (period).to_bytes(1,'big')
+  else:
+      period_b = (period).to_bytes(2,'big')
+
+  data = b'DT' + period_b
+  payload = gen_txreq('01',hexstr(dest),'00','00',hexstr(data)) 
+  bytestr = gen_headtail(payload)
+  return bytestr
