@@ -340,14 +340,15 @@ def remote_query(ser,remote,param):
   success = 0
 
   command_dict = {
-    'PL' : b'QP',
-    'CH' : b'QC',
+    'PL' : b'QPL',
+    'CH' : b'QCH',
     'A'  : b'QA',
     'T'  : b'QT',
     'WR' : b'DW',
     'S'  : b'QS',
     'F'  : b'QF',
-    'V'  : b'QV'
+    'V'  : b'QV',
+    'MR' : b'QMR'
   }
 
   data = command_dict[param]

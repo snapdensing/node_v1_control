@@ -273,10 +273,11 @@ def debug_setaddr(newaddr,dest):
 #         - 1-character string for MSP parameter
 def debug_query(atcom,dest):
   command_dict = {
-    'PL' : b'QP',
+    'PL' : b'QPL',
     'CH' : b'QC',
     'A'  : b'QA',
-    'T'  : b'QT'
+    'T'  : b'QT',
+    'MR' : b'QMR'
   }
   data = command_dict[atcom]
   print('data: {}({})'.format(data,type(data)))
