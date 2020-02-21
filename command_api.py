@@ -487,3 +487,53 @@ def remote_period(ser,remote,period):
   success = 1
   return success
 
+# Set AT parameter
+def remote_at(ser,remote,atparam,valhex):
+ 
+  success = 0;
+
+  # Arguments check
+  if len(remote) != 16:
+    print('Invalid remote node address')
+    return success
+  if len(atparam) != 2:
+    print('Invalid AT parameter')
+    return success
+
+  remote_b = mf.hexstr2byte(remote)
+  val_b = mf.hexstr2byte(valhex)
+
+  at_dict = {
+    'PL' : b'DPL',
+    'CH' : b'DCH',
+    'MR' : b'DMR'
+  }
+
+  data_b = at_dict[atparam] + val_b
+  payload = pe.gen_txreq('01',mf.hexstr(remote_b),'00','00',mf.hexstr(data_b))
+  bytestr = pe.gen_headtail(payload)
+  ser.write(bytestr)
+
+  payload = b'\x00'
+  while payload[0] != 0x8b:
+    success, payload = pd.rxpacket_buffered(ser)
+    if payload == b'':
+      print('Serial timeout')
+      return 0
+    if success == 0:
+      print('Error receiving response from Transmit request')
+      return success
+    if payload[0] == 0x8b:
+      error = pd.decode_txstat(payload)
+      if error == 1:
+        print('Error reported by Transmit status')
+        return 0
+
+  print('Remote {} AT parameter {} now set to {}'.format(remote,atparam,valhex))
+  success = 1
+  return success
+
+
+
+
+ 
