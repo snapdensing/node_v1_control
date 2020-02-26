@@ -10,7 +10,11 @@ Python functions for configuring and controlling RESE2NSE v1 nodes (XBee). Code 
   - [remote_nodeid()](#remote_nodeid)
   - [remote_nodeloc()](#remote_nodeloc)
   - [remote_channel()](#remote_channel)
+  - [remote_flag()](#remote_flag)
+  - [remote_hops()](#remote_hops)
+  - [remote_period()](#remote_period)
   - [remote_power()](#remote_power)
+  - [remote_retries()](#remote_retries)
   - [remote_wr()](#remote_wr)
 - Remote Node (XBee + MSP) Query and Control
   - [remote_query()](#remote_query)
@@ -102,6 +106,46 @@ Remote nodes can only be configured when they are in the idle/debug state (not s
 - Return value:
   - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
 
+<a name="remote_flag"></a>
+### `remote_flag(ser, remote, flag)`
+
+- Sets the control flag of a remote node. Flag register fields are:
+  - bit `7` - Auto-start sensing flag. Auto-starts node into sensing state on boot when set to 0.
+
+- Arguments:
+  - `ser` - (type: serial object) Serial object for local USB-connected XBee.
+  - `remote` - (type: string) Hexadecimal value of 64-bit remote node address.
+  - `flag` - (type: string) Hexadecimal value of new control flag for remote node (Values allowed: 11 to 26)
+
+- Return value:
+  - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
+
+<a name="remote_hops"></a>
+### `remote_hops(ser, remote, hops)`
+
+- Sets the XBee maximum hops of a remote node.
+
+- Arguments:
+  - `ser` - (type: serial object) Serial object for local USB-connected XBee.
+  - `remote` - (type: string) Hexadecimal value of 64-bit remote node address.
+  - `hops` - (type: int) New XBee maximum hops for remote node (Values allowed: 1 to 32)
+
+- Return value:
+  - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
+
+<a name="remote_period"></a>
+### `remote_period(ser, remote, period)`
+
+- Sets the sampling period of a remote node. A value of 1 corresponds to 0.25s.
+
+- Arguments:
+  - `ser` - (type: serial object) Serial object for local USB-connected XBee.
+  - `remote` - (type: string) Hexadecimal value of 64-bit remote node address.
+  - `period` - (type: int) New sampling period for remote node (Values allowed: 0 to 65535)
+
+- Return value:
+  - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
+
 <a name="remote_power"></a>
 ### `remote_power(ser, remote, power)`
 - Sets the XBee transmit power of a remote node.
@@ -110,6 +154,18 @@ Remote nodes can only be configured when they are in the idle/debug state (not s
   - `ser` - (type: serial object) Serial object for local USB-connected XBee.
   - `remote` - (type: string) Hexadecimal value of 64-bit remote node address.
   - `power` - (type: int) New XBee transmit power for remote node (Values allowed: 0 to 4)
+
+- Return value:
+  - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
+
+<a name="remote_retries"></a>
+### `remote_retries(ser, remote, ret)`
+- Sets the XBee maximum retries of a remote node.
+
+- Arguments:
+  - `ser` - (type: serial object) Serial object for local USB-connected XBee.
+  - `remote` - (type: string) Hexadecimal value of 64-bit remote node address.
+  - `ret` - (type: int) New XBee maximum retries for remote node (Values allowed: 0 to 7)
 
 - Return value:
   - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
@@ -138,6 +194,8 @@ Remote nodes can only be configured when they are in the idle/debug state (not s
   - `success` - (type: int) Returns a 1 on a successful change, 0 otherwise.
 
 - Parameters (`param`):
+  - `'MR'` - XBee transmit power. Node returns `'QMR[ret]'`, where `[ret]` is 1-byte maximum retries value (0x00 to 0x07).
+  - `'NH'` - XBee transmit power. Node returns `'QNH[hops]'`, where `[power]` is 1-byte maximum hops value (0x01 to 0x20).
   - `'PL'` - XBee transmit power. Node returns `'QPL[power]'`, where `[power]` is 1-byte power value (0x00 to 0x04).
   - `'CH'` - XBee channel. Node returns `'QC[channel]'`, where `[channel]` is 1-byte channel value (0x0b to 0x1a).
   - `'A'` - Aggregator address. Node returns `'QA[address]'`, where `[address]` is an 8-byte value.
