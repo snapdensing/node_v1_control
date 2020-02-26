@@ -348,7 +348,8 @@ def remote_query(ser,remote,param):
     'S'  : b'QS',
     'F'  : b'QF',
     'V'  : b'QV',
-    'MR' : b'QMR'
+    'MR' : b'QMR',
+    'NH' : b'QNH'
   }
 
   data = command_dict[param]
@@ -506,7 +507,8 @@ def remote_at(ser,remote,atparam,valhex):
   at_dict = {
     'PL' : b'DPL',
     'CH' : b'DCH',
-    'MR' : b'DMR'
+    'MR' : b'DMR',
+    'NH' : b'DNH'
   }
 
   data_b = at_dict[atparam] + val_b
@@ -533,7 +535,30 @@ def remote_at(ser,remote,atparam,valhex):
   success = 1
   return success
 
+# Change maximum retries
+# Arguments:
+#   ret - (int) Max retries
+def remote_retries(ser,remote,ret):
+   if (ret < 0) | (ret > 7):
+       print('Invalid parameter value')
+       return 0 
+
+   ret_b = (ret).to_bytes(1,'big')
+   rethex = mf.hexstr(ret_b)
+   success = remote_at(ser,remote,'MR',rethex)
+   return success
+
+# Change maximum hops
+# Arguments:
+#   hops - (int) Max hops
+def remote_hops(ser,remote,hops):
+   if (hops < 1) | (hops > 32):
+       print('Invalid parameter value')
+       return 0 
+
+   hops_b = (hops).to_bytes(1,'big')
+   hopshex = mf.hexstr(hops_b)
+   success = remote_at(ser,remote,'NH',hopshex)
+   return success
 
 
-
- 
