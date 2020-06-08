@@ -563,6 +563,8 @@ def remote_hops(ser,remote,hops):
 
 # Check local XBee address
 def local_addr(ser):
-  addr = pe.atcom_query('SH')
-  print('Local address: {}'.format(mf.hexstr(addr)))
+  bytestr = pe.atcom_query('SH')
+  ser.write(bytestr)
+  payload = pd.rxpacket(ser)
+  print('Local address: {}'.format(mf.hexstr(payload)))
 
