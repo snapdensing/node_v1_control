@@ -166,6 +166,11 @@ def decode_rxpacket(payload, **kwargs):
       print('  Rx options: ({})'.format(hex(rxopt)))
     print('  Rx data: 0x{} ({})'.format(data,payload[12:]))
 
+  else:
+    print('src: {}'.format(src))
+    print('data: {}'.format(data))
+    return src, data
+
 # Decode generic payload
 def decode_payload(payload,**kwargs):
 
@@ -174,6 +179,8 @@ def decode_payload(payload,**kwargs):
 
   # Set to 0 if transmit delivery status is success
   status = 0
+  src = '00'
+  data = '00'
 
   if payload[0] == 0x88:
     status = decode_atcomres(payload)
@@ -182,9 +189,10 @@ def decode_payload(payload,**kwargs):
   elif payload[0] == 0x90:
     if suppress == 1:
       print('decode_rxpacket() output supressed')
-      decode_rxpacket(payload,suppress=1)
+      src, data = decode_rxpacket(payload,suppress=1)
+      return src, data
     else:
-      decode_rxpacket(payload)
+      status = decode_rxpacket(payload)
   else:
     print('Error: Unknown XBee API frame type')
 

@@ -48,5 +48,7 @@ while 1:
 
   success, payload = pd.rxpacket(ser)
   print(mf.hexstr(payload))
-  status = pd.decode_payload(payload,suppress=1)
+  src, data = pd.decode_payload(payload,suppress=1)
+  print('Source: 0x{}'.format(src))
+  print('Data: 0x{}'.format(data))
   print('***')
