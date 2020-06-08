@@ -142,7 +142,10 @@ def decode_txstat(payload):
     return 1
 
 # Decode Receive Packet frame 0x90
-def decode_rxpacket(payload):
+def decode_rxpacket(payload, **kwargs):
+
+  # Suppress option
+  suppress = kwargs.get('suppress',0)
 
   src = hexstr(payload[1:9])
   res = hexstr(payload[9:11])
@@ -153,17 +156,21 @@ def decode_rxpacket(payload):
   }
   data = hexstr(payload[12:])
 
-  print('Receive Packet frame (0x90)')
-  print('  64-bit source addr: {}'.format(src))
-  print('  Reserved: {}'.format(res))
-  if rxopt in rxopt_dict:
-    print('  Rx options: {} ({})'.format(rxopt,rxopt_dict[rxopt]))
-  else:
-    print('  Rx options: ({})'.format(hex(rxopt)))
-  print('  Rx data: 0x{} ({})'.format(data,payload[12:]))
+  if suppress == 0:
+    print('Receive Packet frame (0x90)')
+    print('  64-bit source addr: {}'.format(src))
+    print('  Reserved: {}'.format(res))
+    if rxopt in rxopt_dict:
+      print('  Rx options: {} ({})'.format(rxopt,rxopt_dict[rxopt]))
+    else:
+      print('  Rx options: ({})'.format(hex(rxopt)))
+    print('  Rx data: 0x{} ({})'.format(data,payload[12:]))
 
 # Decode generic payload
-def decode_payload(payload):
+def decode_payload(payload,**kwargs):
+
+  # Suppress option
+  suppress = kwargs.get('suppress',0)
 
   # Set to 0 if transmit delivery status is success
   status = 0
@@ -173,7 +180,11 @@ def decode_payload(payload):
   elif payload[0] == 0x8b:
     status = decode_txstat(payload)
   elif payload[0] == 0x90:
-    decode_rxpacket(payload)
+    if suppress == 1:
+      print('decode_rxpacket() output supressed')
+      decode_rxpacket(payload,suppress=1)
+    else:
+      decode_rxpacket(payload)
   else:
     print('Error: Unknown XBee API frame type')
 
