@@ -566,5 +566,14 @@ def local_addr(ser):
   bytestr = pe.atcom_query('SH')
   ser.write(bytestr)
   success, payload = pd.rxpacket(ser)
-  print('Local address: {}'.format(mf.hexstr(payload)))
+  addr_hi = payload[5:]
+
+  bytestr = pe.atcom_query('SL')
+  ser.write(bytestr)
+  success, payload = pd.rxpacket(ser)
+  addr_lo = payload[5:]
+
+  addr = mf.hexstr(addr_hi) + mf.hexstr(addr_lo)
+
+  print('Local address: {}'.format(addr))
 
