@@ -565,6 +565,6 @@ def remote_hops(ser,remote,hops):
 def local_addr(ser):
   bytestr = pe.atcom_query('SH')
   ser.write(bytestr)
-  payload = pd.rxpacket(ser)
+  success, payload = pd.rxpacket(ser)
   print('Local address: {}'.format(mf.hexstr(payload)))
 
