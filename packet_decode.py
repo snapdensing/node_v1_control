@@ -270,32 +270,32 @@ def parse_data(data):
 
     ## Battery voltage
     if data[0:2] == '00':
-      fields['batt'] = data[2:6]
+      fields['batt'] = '0x' + data[2:6]
       data = data[6:] 
 
     ## MSP temp
     elif data[0:2] == '01':
-      fields['temp_int'] = data[2:6]
+      fields['temp_int'] = '0x' + data[2:6]
       data = data[6:]
 
     ## DHT11 temp
     elif data[0:2] == '02':
-      fields['temp_dht11'] = data[2:6]
+      fields['temp_dht11'] = '0x' + data[2:6]
       data = data[6:]
 
     ## DHT11 humidity
     elif data[0:2] == '03':
-      fields['rh_dht11'] = data[2:6]
+      fields['rh_dht11'] = '0x' + data[2:6]
       data = data[6:]
 
     ## DHT22 temp
     elif data[0:2] == '04':
-      fields['temp_dht22'] = data[2:6]
+      fields['temp_dht22'] = '0x' + data[2:6]
       data = data[6:]
 
     ## DHT22 humidity
     elif data[0:2] == '05':
-      fields['rh_dht22'] = data[2:6]
+      fields['rh_dht22'] = '0x' + data[2:6]
       data = data[6:]
 
     ## ID/Loc
