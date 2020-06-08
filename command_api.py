@@ -195,7 +195,7 @@ def remote_nodeid(ser,remote,id):
   length = len(id)
   if length > maxlen:
     print('Exceeded maximum node ID length')
-    return 0
+    #return 0
   length_b = (length).to_bytes(1,'big')
 
   data = b'DI' + length_b + bytes(id,'ascii')
@@ -226,7 +226,7 @@ def remote_nodeloc(ser,remote,loc):
   length = len(loc)
   if length > maxlen:
     print('Exceeded maximum node loc length')
-    return 0
+    #return 0
   length_b = (length).to_bytes(1,'big')
 
   data = b'DL' + length_b + bytes(loc,'ascii')
@@ -561,4 +561,8 @@ def remote_hops(ser,remote,hops):
    success = remote_at(ser,remote,'NH',hopshex)
    return success
 
+# Check local XBee address
+def local_addr(ser):
+  addr = pe.atcom_query('SH')
+  print('Local address: {}'.format(mf.hexstr(addr)))
 
