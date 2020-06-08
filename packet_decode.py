@@ -1,6 +1,7 @@
 from misc_func import byte_sum
 from misc_func import byte_diff0xff
 from misc_func import hexstr
+from misc_func import hexstr2byte
 
 # Receive XBee API frame
 def rxpacket(ser):
@@ -167,8 +168,6 @@ def decode_rxpacket(payload, **kwargs):
     print('  Rx data: 0x{} ({})'.format(data,payload[12:]))
 
   else:
-    print('src: {}'.format(src))
-    print('data: {}'.format(data))
     return src, data
 
 # Decode generic payload
@@ -253,4 +252,61 @@ def decode_startack(payload,remote):
     print('Received other API frame')
 
   return success
+
+# Parse payload (sensor data)
+def parse_data(data):
+  # Type
+  type = data[0:2]
+  data = data[2:]
+
+  # Counter
+  ctr = data[0:2]
+  data = data[2:]
+
+  # Fields
+  fields = {}
+
+  while len(data) != 0:
+
+    ## Battery voltage
+    if data[0:2] == '00':
+      fields['batt'] = data[2:6]
+      data = data[6:] 
+
+    ## MSP temp
+    elif data[0:2] == '01':
+      fields['temp_int'] = data[2:6]
+      data = data[6:]
+
+    ## DHT11 temp
+    elif data[0:2] == '02':
+      fields['temp_dht11'] = data[2:6]
+      data = data[6:]
+
+    ## DHT11 humidity
+    elif data[0:2] == '03':
+      fields['rh_dht11'] = data[2:6]
+      data = data[6:]
+
+    ## DHT22 temp
+    elif data[0:2] == '04':
+      fields['temp_dht22'] = data[2:6]
+      data = data[6:]
+
+    ## DHT22 humidity
+    elif data[0:2] == '05':
+      fields['rh_dht22'] = data[2:6]
+      data = data[6:]
+
+    ## ID/Loc
+    elif data[0:2] == '07':
+      data = data[2:]
+      data_bytes = hexstr2byte(data)
+      fields['idloc'] = data_bytes.decode('utf-8')
+      data = ''
+
+    else:
+      data = ''
+
+  return fields
 
