@@ -47,11 +47,16 @@ except:
 while 1:
 
   success, payload = pd.rxpacket(ser)
-  print(mf.hexstr(payload))
   src, data = pd.decode_payload(payload,suppress=1)
   fields = pd.parse_data(data)
-  parsed = 'src, 0x' + src
+
+  now = datetime.now()
+  parsed = now.strftime('%Y-%m-%d %H:%M:%S')
+  parsed = parsed + ', src, 0x' + src
   for item in fields:
     parsed = parsed + ', {}, {}'.format(item,fields[item]) 
   print(parsed)
+  fp = open(outputfile,"a+")
+  fp.write('{}\n'.format(parsed))
+  fp.close()
   print('***')
