@@ -2,6 +2,7 @@ import argparse
 from datetime import datetime
 from misc_func import hexstr2byte
 import requests
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 # Remote server info
 url = 'http://192.168.254.166/sensors.php'
@@ -85,32 +86,40 @@ if args.srclog:
 else:
   srclog = '/var/log/aggregator.log'
 
-# Get tail of srclog
-lines = LastNlines(srclog,1)
-tail = lines[0][:-1]
-fields = tail.split(', ')
+# Scheduler job
+def job_function():
+  # Get tail of srclog
+  lines = LastNlines(srclog,1)
+  tail = lines[0][:-1]
+  fields = tail.split(', ')
 
-# Dictionary of last entry
-entry = {} 
+  # Dictionary of last entry
+  entry = {} 
 
-# Extract timestamp
-#entry['ts'] = datetime.strptime(fields[0],'%Y-%m-%d %H:%M:%S')
-entry['ts'] = fields[0]
-fields = fields[1:]
+  # Extract timestamp
+  #entry['ts'] = datetime.strptime(fields[0],'%Y-%m-%d %H:%M:%S')
+  entry['ts'] = fields[0]
+  fields = fields[1:]
 
-# Extract remaining fields
-while len(fields) != 0:
+  # Extract remaining fields
+  while len(fields) != 0:
 
-  entry[fields[0]] = fields[1]
-  fields = fields[2:]
+    entry[fields[0]] = fields[1]
+    fields = fields[2:]
 
-# Data conversion
-print(entry)
-entry = processFields(entry)
-print(entry)
-loc = get_loc(entry)
+  # Data conversion
+  print(entry)
+  entry = processFields(entry)
+  print(entry)
+  loc = get_loc(entry)
 
-# HTTP post
-data_post = {'dev':dev, 'loc':loc, 'ts':entry['ts'], 'temp':entry['temp_dht22']}
-print('http posting: {}'.format(data_post))
-requests.post(url,data_post)
+  # HTTP post
+  data_post = {'dev':dev, 'loc':loc, 'ts':entry['ts'], 'temp':entry['temp_dht22']}
+  print('http posting: {}'.format(data_post))
+  requests.post(url,data_post)
+
+# cron scheduler
+sched = BlockingScheduler()
+#sched.add_job(job_function, 'cron', second='0,5,10,15,20,25,30,35,40,45,50,55')
+sched.add_job(job_function, 'cron', second='0')
+sched.start()
