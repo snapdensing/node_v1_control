@@ -1,6 +1,11 @@
 import argparse
 from datetime import datetime
 from misc_func import hexstr2byte
+import requests
+
+# Remote server info
+url = 'http://192.168.254.166/sensors.php'
+dev = 'RN'
 
 # Function for getting last N lines
 # from: https://www.geeksforgeeks.org/python-reading-last-n-lines-of-a-file/
@@ -47,6 +52,24 @@ def processFields(entry):
      rh = rh_int/10.0
      entry['rh_dht22'] = rh 
 
+   return entry
+
+# idloc to dev mapping
+def get_loc(entry):
+
+  # Look up table
+  dict = {
+    'Snap:Blah':'RN0'
+    }
+
+  if 'idloc' in entry:
+    idloc = entry['idloc']
+    if idloc in dict:
+      return dict[idloc]
+    else:
+      return 'Error'
+  else:
+    return 'Error'
 
 # Parser
 parser = argparse.ArgumentParser()
@@ -71,7 +94,8 @@ fields = tail.split(', ')
 entry = {} 
 
 # Extract timestamp
-entry['ts'] = datetime.strptime(fields[0],'%Y-%m-%d %H:%M:%S')
+#entry['ts'] = datetime.strptime(fields[0],'%Y-%m-%d %H:%M:%S')
+entry['ts'] = fields[0]
 fields = fields[1:]
 
 # Extract remaining fields
@@ -80,6 +104,13 @@ while len(fields) != 0:
   entry[fields[0]] = fields[1]
   fields = fields[2:]
 
+# Data conversion
 print(entry)
-processFields(entry)
+entry = processFields(entry)
 print(entry)
+loc = get_loc(entry)
+
+# HTTP post
+data_post = {'dev':dev, 'loc':loc, 'ts':entry['ts'], 'temp':entry['temp_dht22']}
+print('http posting: {}'.format(data_post))
+requests.post(url,data_post)
