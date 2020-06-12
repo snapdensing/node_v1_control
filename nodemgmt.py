@@ -28,8 +28,8 @@ class node:
     self.name = name
     self.addr = addr
     self.channel = 12
-    self.aggre = '0013a200409a0a81'
-    self.txperiod = 10
+    self.aggre = None
+    self.txperiod = None 
     self.loc = 'noloc'
     self.lastping = None
     self.lastcommit = None
@@ -56,7 +56,8 @@ class node:
       try:
         self.lastping = datetime.now()
         self.status = 'Idle'
-        return parseAggre(payload)
+        self.aggre = parseAggre(payload)
+        return self.aggre
       except:
         print('Error getting aggregator address')
         return None
@@ -70,7 +71,8 @@ class node:
       try:
         self.lastping = datetime.now()
         self.status = 'Idle'
-        return parsePeriod(payload)
+        self.txperiod = parsePeriod(payload)
+        return self.txperiod
       except:
         print('Error getting transmit period')
         return None
@@ -85,6 +87,8 @@ class node:
       if success == 1:
         self.status = 'Sensing'
         self.lastping = datetime.now()
+        if period != 0:
+          self.txperiod = period
       else:
         print('Error sending START command')
 
@@ -110,7 +114,7 @@ def parseAggre(payload):
     print('Invalid payload: header')
     return 'Error'
   else:
-    return payload[2:]
+    return payload[4:]
 
 # Parse Period from Query reply
 def parsePeriod(payload):
