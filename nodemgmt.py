@@ -33,33 +33,72 @@ class node:
     self.loc = 'noloc'
     self.lastping = None
     self.lastcommit = None
+    self.status = None
 
   def ping(self,ser):
-    data = c.remote_query(ser,self.addr,'A')
-    try:
-      print('Aggregator: {}'.format(parseAggre(data)))
-      self.lastping = datetime.now()
-    except:
-      print('Error pinging node')
-      return None
+    if self.status == 'Sensing':
+      print('Cannot send ping. Node is sensing')
+    else:
+      data = c.remote_query(ser,self.addr,'A')
+      try:
+        print('Aggregator: {}'.format(parseAggre(data)))
+        self.lastping = datetime.now()
+        self.status = 'Idle'
+      except:
+        print('Error pinging node')
 
   def getAggre(self,ser):
-    payload = c.remote_query(ser,self.addr,'A')
-    try:
-      self.lastping = datetime.now()
-      return parseAggre(payload)
-    except:
-      print('Error getting aggregator address')
+    if self.status == 'Sensing':
+      print('Cannot send query. Node is sensing')
       return None
+    else:
+      payload = c.remote_query(ser,self.addr,'A')
+      try:
+        self.lastping = datetime.now()
+        self.status = 'Idle'
+        return parseAggre(payload)
+      except:
+        print('Error getting aggregator address')
+        return None
 
   def getPeriod(self,ser):
-    payload = c.remote_query(ser,self.addr,'T')
-    try:
-      self.lastping = datetime.now()
-      return parsePeriod(payload)
-    except:
-      print('Error getting transmit period')
+    if self.status == 'Sensing':
+      print('Cannot send query. Node is sensing')
       return None
+    else:
+      payload = c.remote_query(ser,self.addr,'T')
+      try:
+        self.lastping = datetime.now()
+        self.status = 'Idle'
+        return parsePeriod(payload)
+      except:
+        print('Error getting transmit period')
+        return None
+
+  def start(self,ser,**kwargs):
+    period = kwargs.get('period',0)
+
+    if self.status == 'Sensing':
+      print('Node already sensing')
+    else:
+      success = c.remote_start(ser,self.addr,period)
+      if success == 1:
+        self.status = 'Sensing'
+        self.lastping = datetime.now()
+      else:
+        print('Error sending START command')
+
+  def stop(self,ser):
+    if self.status == 'Idle':
+      print('Node already idle')
+    else:
+      success = c.remote_stop(ser,self.addr)
+      if success == 1:
+        self.status = 'Idle'
+        self.lastping = datetime.now()
+      else:
+        print('Error sending STOP command')
+
 
 # Parse Aggregator address from Query reply
 def parseAggre(payload):
