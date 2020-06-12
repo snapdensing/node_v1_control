@@ -410,7 +410,11 @@ def remote_power(ser,remote,power):
 #   ser - Serial interface
 #   remote - (hex string) 64-bit remote node address
 #   param - (string) parameter
-def remote_query(ser,remote,param):
+def remote_query(ser,remote,param,**kwargs):
+
+  # Supress option
+  suppress = kwargs.get('suppress',0)
+
   success = 0
 
   command_dict = {
@@ -466,8 +470,9 @@ def remote_query(ser,remote,param):
 
     if payload[0] == 0x90:
       #print('-- received packet')
-      pd.decode_rxpacket(payload)
+      src, data = pd.decode_rxpacket(payload,suppress=1)
       success = 1
+      return data
     else:
       success = 0 
 
