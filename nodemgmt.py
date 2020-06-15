@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import command_api as c
 from datetime import datetime
+import misc_func as mf
 
 # Initialize XBee command node
 def initcmd(dev,channel):
@@ -34,6 +35,7 @@ class node:
     self.lastping = None
     self.lastcommit = None
     self.status = None
+    self.ver = None
 
   def ping(self,ser):
     if self.status == 'Sensing':
@@ -76,6 +78,22 @@ class node:
       except:
         print('Error getting transmit period')
         return None
+
+  def getVersion(self,ser):
+    if self.status == 'Sensing':
+      print('Cannot send query. Node is sensing')
+      return None
+    else:
+      payload = c.remote_query(ser,self.addr,'V')
+      try:
+        self.lastping = datetime.now()
+        self.status = 'Idle'
+        self.ver = parseVersion(payload)
+        return self.ver
+      except:
+        print('Error getting transmit period')
+        return None
+
 
   def start(self,ser,**kwargs):
     period = kwargs.get('period',0)
@@ -127,3 +145,14 @@ def parsePeriod(payload):
     return 'Error'
   else:
     return int('0x'+payload[4:],0)
+
+# Parse Version from Query reply
+def parseVersion(payload):
+
+  if payload[0:4] != '5156':
+    print('Invalid payload: header')
+    return 'Error'
+  else:
+    bytestr = mf.hexstr2byte(payload[4:])
+    return bytestr.decode('utf-8')
+
