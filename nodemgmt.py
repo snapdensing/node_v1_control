@@ -119,8 +119,18 @@ class node:
         self.status = 'Idle'
         self.lastping = datetime.now()
       else:
-        print('Error sending STOP command')
-
+        print('Error sending STOP command')         
+          
+  def setAggre(self,ser,aggre):
+    if self.status == 'Sensing':
+      print('Cannot send command. Node is sensing')
+    else:
+      success = c.remote_aggre(ser,self.addr,aggre)
+      if success == 1:
+        self.lastping = datetime.now()
+        self.aggre = aggre
+      else:
+        print('Error setting node {}''s aggregator'.format(self.name))
 
 # Parse Aggregator address from Query reply
 def parseAggre(payload):
