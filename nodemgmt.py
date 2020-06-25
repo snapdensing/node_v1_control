@@ -132,11 +132,21 @@ class node:
         self.lastping = datetime.now()
         self.status = 'Idle'
         self.ver = parseVersion(payload)
-        return self.ver
-      except:
-        print('Error getting transmit period')
-        return None
 
+        if self.logfile != None:
+          logAction(self.logfile,'Node {} getVersion()'.format(self.name))
+          logAction(self.logfile,'Response: {}'.format(self.ver))
+
+        return self.ver
+
+      except:
+        #print('Error getting transmit period')
+        response = 'Error getting firmware version'
+        if self.logfile != None:
+          logAction(self.logfile,'Node {} getVersion()'.format(self.name))
+          logAction(self.logfile,'Response: {}'.format(response))
+
+        return None
 
   def start(self,ser,**kwargs):
     period = kwargs.get('period',0)
@@ -150,8 +160,15 @@ class node:
         self.lastping = datetime.now()
         if period != 0:
           self.txperiod = period
+
+        if self.logfile != None:
+          logAction(self.logfile,'Node {} started'.format(self.name))
+
       else:
         print('Error sending START command')
+
+        if self.logfile != None:
+          logAction(self.logfile,'Error starting Node {}'.format(self.name))
 
   def stop(self,ser):
     if self.status == 'Idle':
@@ -161,8 +178,15 @@ class node:
       if success == 1:
         self.status = 'Idle'
         self.lastping = datetime.now()
+
+        if self.logfile != None:
+          logAction(self.logfile,'Node {} stopped'.format(self.name))
+
       else:
         print('Error sending STOP command')         
+
+        if self.logfile != None:
+          logAction(self.logfile,'Error stopping Node {}'.format(self.name))
           
   def setAggre(self,ser,aggre):
     if self.status == 'Sensing':
