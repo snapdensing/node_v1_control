@@ -34,6 +34,7 @@ class node:
     self.loc = 'noloc'
     self.lastping = None
     self.lastcommit = None
+    self.txpower = None
     self.status = None
     self.ver = None
     
@@ -116,8 +117,46 @@ class node:
       except:
         #print('Error getting transmit period')
         response = 'Error getting transmit period'
+        print(response)
         if self.logfile != None:
           logAction(self.logfile,'Node {} getPeriod()'.format(self.name))
+          logAction(self.logfile,'Response: {}'.format(response))
+
+        return None
+
+  # Class function for querying remote node's power
+  # Nodes with firmware version 1.7.2 should set old parameter to True
+  # - i.e. node0.getPower(ser,old=True)
+  def getPower(self,ser,**kwargs):
+
+    # Backwards compatibility for firmware 1.7.2 and prior
+    oldquery = kwargs.get('old',False)
+
+    if self.status == 'Sensing':
+      print('Cannot send query. Node is sensing')
+      return None
+    else:
+      if oldquery == False:
+        payload = c.remote_query(ser,self.addr,'PL')
+      else:
+        payload = c.remote_query(ser,self.addr,'P')
+
+      try:
+        self.lastping = datetime.now()
+        self.status = 'Idle'
+        self.txpower = parsePower(payload)
+
+        if self.logfile != None:
+          logAction(self.logfile,'Node {} getPower()'.format(self.name))
+          logAction(self.logfile,'Response: {}'.format(self.txpower))
+
+        return self.txpower
+
+      except:
+        response = 'Error getting transmit power'
+        print(response)
+        if self.logfile != None:
+          logAction(self.logfile,'Node {} getPower()'.format(self.name))
           logAction(self.logfile,'Response: {}'.format(response))
 
         return None
@@ -208,6 +247,29 @@ class node:
           logAction(self.logfile,'Error setting node {}\'s aggregator'.
               format(self.name))
 
+  def setPeriod(self,ser,period):
+    pass
+
+  def setPower(self,ser,power):
+    if self.status == 'Sensing':
+      print('Cannot send command. Node is sensing')
+    else:
+      success = c.remote_power(ser,self.addr,power)
+      if success == 1:
+        self.lastping = datetime.now()
+        self.txpower = power
+
+        if self.logfile != None:
+          logAction(self.logfile,'Node {} power set to 0x{}'.format(
+            self.name,self.txpower))
+
+      else:
+        msg = 'Error setting node {}\'s power'.format(self.name)
+        print(msg)
+
+        if self.logfile != None:
+          logAction(self.logfile,msg)
+
 # Parse Aggregator address from Query reply
 def parseAggre(payload):
 
@@ -231,6 +293,18 @@ def parsePeriod(payload):
     return 'Error'
   else:
     return int('0x'+payload[4:],0)
+  
+# Parse Power from Query reply
+def parsePower(payload):
+
+  if len(payload) != 8:
+    print('Invalid payload: length')
+    return 'Error'
+  elif payload[0:6] != '51504c':
+    print('Invalid payload: header')
+    return 'Error'
+  else:
+    return int('0x'+payload[6:],0)
 
 # Parse Version from Query reply
 def parseVersion(payload):
