@@ -196,8 +196,17 @@ class node:
       if success == 1:
         self.lastping = datetime.now()
         self.aggre = aggre
+
+        if self.logfile != None:
+          logAction(self.logfile,'Node {} aggregator set to 0x{}'.format(
+            self.name,self.aggre))
+
       else:
-        print('Error setting node {}''s aggregator'.format(self.name))
+        print('Error setting node {}\'s aggregator'.format(self.name))
+
+        if self.logfile != None:
+          logAction(self.logfile,'Error setting node {}\'s aggregator'.
+              format(self.name))
 
 # Parse Aggregator address from Query reply
 def parseAggre(payload):
