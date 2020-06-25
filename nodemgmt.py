@@ -25,7 +25,7 @@ def parseAggre(payload):
 # - addr - 64-bit hex string for XBee address
 class node:
 
-  def __init__(self, name, addr):
+  def __init__(self, name, addr, **kwargs):
     self.name = name
     self.addr = addr
     self.channel = 12
@@ -36,6 +36,13 @@ class node:
     self.lastcommit = None
     self.status = None
     self.ver = None
+    
+    self.logfile = kwargs.get('log',None)
+
+    if self.logfile != None:
+      logAction(self.logfile,'Node {} (0x{}) created'.format(self.name,
+        self.addr))
+    
 
   def ping(self,ser):
     if self.status == 'Sensing':
@@ -43,11 +50,23 @@ class node:
     else:
       data = c.remote_query(ser,self.addr,'A')
       try:
-        print('Aggregator: {}'.format(parseAggre(data)))
+        #print('Aggregator: {}'.format(parseAggre(data)))
+        response = 'Aggregator: {}'.format(parseAggre(data))
+        print(response)
         self.lastping = datetime.now()
         self.status = 'Idle'
+        if self.logfile != None:
+          logAction(self.logfile,'Node {} ping()'.format(self.name))
+          logAction(self.logfile,'Response: {}'.format(response))
       except:
-        print('Error pinging node')
+        #print('Error pinging node')
+        response = 'Error pinging node'
+        print(response)
+        
+      if self.logfile != None:
+        logAction(self.logfile,'Node {} ping()'.format(self.name))
+        logAction(self.logfile,'Response: {}'.format(response))
+ 
 
   def getAggre(self,ser):
     if self.status == 'Sensing':
@@ -166,3 +185,10 @@ def parseVersion(payload):
     bytestr = mf.hexstr2byte(payload[4:])
     return bytestr.decode('utf-8')
 
+# Log action to file
+def logAction(logfile,msg):
+  now = datetime.now()
+  fp = open(logfile,'a+')
+  line = str(now) + ': ' + msg + '\n'
+  fp.write(line)
+  fp.close()
