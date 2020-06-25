@@ -78,9 +78,22 @@ class node:
         self.lastping = datetime.now()
         self.status = 'Idle'
         self.aggre = parseAggre(payload)
+
+        if self.logfile != None:
+          logAction(self.logfile,'Node {} getAggre()'.format(self.name))
+          logAction(self.logfile,'Response: {}'.format(self.aggre))
+
         return self.aggre
+
       except:
-        print('Error getting aggregator address')
+        #print('Error getting aggregator address')
+        response = 'Error getting aggregator address'
+        print(response)
+
+        if self.logfile != None:
+          logAction(self.logfile,'Node {} getAggre()'.format(self.name))
+          logAction(self.logfile,'Response: {}'.format(response))
+
         return None
 
   def getPeriod(self,ser):
@@ -93,9 +106,20 @@ class node:
         self.lastping = datetime.now()
         self.status = 'Idle'
         self.txperiod = parsePeriod(payload)
+
+        if self.logfile != None:
+          logAction(self.logfile,'Node {} getPeriod()'.format(self.name))
+          logAction(self.logfile,'Response: {}'.format(self.txperiod))
+
         return self.txperiod
+
       except:
-        print('Error getting transmit period')
+        #print('Error getting transmit period')
+        response = 'Error getting transmit period'
+        if self.logfile != None:
+          logAction(self.logfile,'Node {} getPeriod()'.format(self.name))
+          logAction(self.logfile,'Response: {}'.format(response))
+
         return None
 
   def getVersion(self,ser):
