@@ -76,10 +76,14 @@ class node:
     else:
       payload = c.remote_query(ser,self.addr,'A')
       try:
+        parsed = parseAggre(payload)
+        if parsed == 'Error':
+          raise Exception('Error parsing payload')
+
+        self.aggre = parsed
         self.lastping = datetime.now()
         self.status = 'Idle'
-        self.aggre = parseAggre(payload)
-
+ 
         if self.logfile != None:
           logAction(self.logfile,'Node {} getAggre()'.format(self.name))
           logAction(self.logfile,'Response: {}'.format(self.aggre))
@@ -103,10 +107,15 @@ class node:
       return None
     else:
       payload = c.remote_query(ser,self.addr,'T')
+
       try:
+        parsed = parsePeriod(payload)
+        if parsed == 'Error':
+          raise Exception('Error parsing payload')
+
+        self.txperiod = parsed
         self.lastping = datetime.now()
         self.status = 'Idle'
-        self.txperiod = parsePeriod(payload)
 
         if self.logfile != None:
           logAction(self.logfile,'Node {} getPeriod()'.format(self.name))
@@ -142,9 +151,13 @@ class node:
         payload = c.remote_query(ser,self.addr,'P')
 
       try:
+        parsed = parsePower(payload)
+        if parsed == 'Error':
+          raise Exception('Error parsing payload')
+
         self.lastping = datetime.now()
         self.status = 'Idle'
-        self.txpower = parsePower(payload)
+        self.txpower = parsed
 
         if self.logfile != None:
           logAction(self.logfile,'Node {} getPower()'.format(self.name))
@@ -167,10 +180,15 @@ class node:
       return None
     else:
       payload = c.remote_query(ser,self.addr,'V')
+
       try:
+        parsed = parseVersion(payload)
+        if parsed == 'Error':
+          raise Exception('Error parsing payload')
+
         self.lastping = datetime.now()
         self.status = 'Idle'
-        self.ver = parseVersion(payload)
+        self.ver = parsed
 
         if self.logfile != None:
           logAction(self.logfile,'Node {} getVersion()'.format(self.name))
