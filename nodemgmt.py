@@ -31,7 +31,7 @@ class node:
     self.channel = 12
     self.aggre = None
     self.txperiod = None 
-    self.loc = 'noloc'
+    self.loc = None
     self.lastping = None
     self.lastcommit = None
     self.txpower = None
@@ -270,6 +270,82 @@ class node:
         if self.logfile != None:
           logAction(self.logfile,msg)
 
+  def commitSetting(self,ser):
+    if self.status == 'Sensing':
+      print('Cannot send command. Node is sensing')
+    else:
+      payload = c.remote_query(ser,self.addr,'WR')
+
+      try:
+        success = parseCommit(payload)
+
+        if success == True:
+          self.lastping = datetime.now()
+          self.status = 'Idle'
+      
+          if self.logfile != None:
+            logAction(self.logfile,'Node {} settings committed to flash'.format(
+              self.name))
+
+        else:
+          msg = 'Error committing node {}\'s settings to flash'.format(
+              self.name)
+          print(msg)
+
+          if self.logfile != None:
+            logAction(self.logfile,msg)
+
+      except:
+        msg = 'Error commiting node {}\'s settings to flash'.format(self.name)
+        print(msg)
+
+        if self.logfile != None:
+          logAction(self.logfile,msg)
+
+
+  def getIDLoc(self,ser):
+    pass
+
+  def setIDLoc(self,ser,name,loc):
+    if self.status == 'Sensing':
+      print('Cannot send command. Node is sensing')
+    else:
+
+      # Set ID/Name
+      success = c.remote_nodeid(ser,self.addr,name)
+      if success == 1:
+        self.lastping = datetime.now()
+        self.name = name
+
+        if self.logfile != None:
+          logAction(self.logfile,'Node 0x{}\'s ID changed to {}'.format(
+            self.addr,self.name))
+
+        # Set Loc
+        success = c.remote_nodeloc(ser,self.addr,loc)
+        if success == 1:
+          self.lastping = datetime.now()
+          self.loc = loc
+
+          if self.logfile != None:
+            logAction(self.logfile,'Node {}\'s loc changed to {}'.format(
+              self.name,self.loc))
+
+        else:
+          msg = 'Error change node {}\'s loc'.format(self.name)
+          print(msg)
+
+          if self.logfile != None:
+            logAction(self.logfile,msg)
+
+      else:
+        msg = 'Error changing node 0x{}\'s ID'.format(self.addr)
+        print(msg)
+
+        if self.logfile != None:
+          logAction(self.logfile,msg)
+
+
 # Parse Aggregator address from Query reply
 def parseAggre(payload):
 
@@ -315,6 +391,15 @@ def parseVersion(payload):
   else:
     bytestr = mf.hexstr2byte(payload[4:])
     return bytestr.decode('utf-8')
+
+# Parse commit from Query reply
+def parseCommit(payload):
+
+  if payload[0:6] != '515752':
+    print('Invalid payload: header')
+    return False
+  else:
+    return True
 
 # Log action to file
 def logAction(logfile,msg):
