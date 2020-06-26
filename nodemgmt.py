@@ -266,7 +266,25 @@ class node:
               format(self.name))
 
   def setPeriod(self,ser,period):
-    pass
+    if self.status == 'Sensing':
+      print('Cannot send command. Node is sensing')
+    else:
+      success = c.remote_period(ser,self.addr,period)
+      if success == 1:
+        self.lastping = datetime.now()
+        self.txperiod = period 
+
+        if self.logfile != None:
+          logAction(self.logfile,'Node {} period set to {}'.format(
+            self.name,self.txperiod))
+
+      else:
+        print('Error setting node {}\'s period'.format(self.name))
+
+        if self.logfile != None:
+          logAction(self.logfile,'Error setting node {}\'s period'.
+              format(self.name))
+
 
   def setPower(self,ser,power):
     if self.status == 'Sensing':
