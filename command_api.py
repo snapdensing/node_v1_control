@@ -419,6 +419,7 @@ def remote_query(ser,remote,param,**kwargs):
 
   command_dict = {
     'PL' : b'QPL',
+    'P'  : b'QP',
     'CH' : b'QCH',
     'A'  : b'QA',
     'T'  : b'QT',
