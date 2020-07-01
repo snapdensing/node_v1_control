@@ -1,5 +1,7 @@
 # Node v1 Control
 
+[Node Management](doc/NODEMGMT.md)
+
 [Command API](doc/COMMANDAPI.md)
 
 Python Virtual Environment: env_xbee_serial

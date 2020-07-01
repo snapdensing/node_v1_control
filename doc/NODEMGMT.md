@@ -7,6 +7,7 @@ Contents:
 - [Setting up serial connection to XBee](serialsetup)
 - [Node Object](nodeobject)
 - [Node Functions](nodefunc)
+- [Sample Code](samplecode)
 
 <a name="serialsetup"></a>
 ## Setting up serial connection to XBee
@@ -304,4 +305,34 @@ Sends a "Write to Flash" command to a remote node. Success updates the value of 
 #### Example:
 ```
 >>> c6.commitSetting(ser)
+```
+
+<a name="samplecode"></a>
+## Sample Code
+
+```
+import nodemgmt as n
+
+# Configure local XBee serial interface, channel 20
+ser = n.initcmd('/dev/ttyUSB0',20)
+
+# Initialize node C6 with address 0x0013a20040e495a7
+# Enable logging to logfile.log
+c6 = n.node('C6','0013a20040e495a7',log='logfile.log')
+
+# Initialize node A6 with address 0x0013a20040f436d7
+# Enable logging to logfile.log
+a6 = n.node('A6','0013a20040f436d7',log='logfile.log')
+
+# Get C6's aggregator address and transmit period
+aggre = c6.getAggre(ser)
+c6.getPeriod(ser)
+
+# Set A6's aggregator and period to be the same as C6
+a6.setAggre(ser, aggre)
+a6.setPeriod(ser, c6.txperiod)
+
+# Start both nodes
+c6.start(ser)
+a6.start(ser)
 ```
