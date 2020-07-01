@@ -4,10 +4,10 @@ This file documents the functions that can be used for controlling the RESE2NSE 
 
 Contents:
 
-- [Setting up serial connection to XBee](serialsetup)
-- [Node Object](nodeobject)
-- [Node Functions](nodefunc)
-- [Sample Code](samplecode)
+- [Setting up serial connection to XBee](#serialsetup)
+- [Node Object](#nodeobject)
+- [Node Functions](#nodefunc)
+- [Sample Code](#samplecode)
 
 <a name="serialsetup"></a>
 ## Setting up serial connection to XBee
@@ -78,17 +78,17 @@ However, we don't actually have exclusive control of the remote node. Other sour
 
 Commands and queries to remote nodes may be sent by using the following node functions.
 
-- [getAggre()](getAggre)
-- [getPeriod()](getPeriod)
-- [getPower()](getPower)
-- [getVersion()](getVersion)
-- [setAggre()](setAggre)
-- [setIDLoc()](setIDLoc)
-- [setPeriod()](setPeriod)
-- [setPower()](setPower)
-- [start()](start)
-- [stop()](stop)
-- [commitSetting()](commitSetting)
+- [getAggre()](#getAggre)
+- [getPeriod()](#getPeriod)
+- [getPower()](#getPower)
+- [getVersion()](#getVersion)
+- [setAggre()](#setAggre)
+- [setIDLoc()](#setIDLoc)
+- [setPeriod()](#setPeriod)
+- [setPower()](#setPower)
+- [start()](#start)
+- [stop()](#stop)
+- [commitSetting()](#commitSetting)
 
 <a name="getAggre"></a>
 ### getAggre(ser)
