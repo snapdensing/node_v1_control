@@ -2,6 +2,8 @@
 import command_api as c
 from datetime import datetime
 import misc_func as mf
+import packet_encode as pe
+import packet_decode as pd
 
 # Initialize XBee command node
 def initcmd(dev,channel):
@@ -10,11 +12,46 @@ def initcmd(dev,channel):
 
 # Check XBee command node channel
 def cmdGetChannel(ser):
-	pass
+  channel = c.local_ch(ser)
+  return channel
 
 # Check XBee command node address
 def cmdGetAddr(ser):
-	pass
+  addr = c.local_addr(ser)
+  return addr
+
+# Set XBee command node channel
+# - Returns 1 on success
+def cmdSetChannel(ser,channel):
+
+  if (channel > 26) | (channel < 11):
+    success = 0
+    print('Invalid channel')
+    return 0
+
+  bytestr = pe.atcom_set('CH',(channel).to_bytes(1,'big'))
+  ser.write(bytestr)
+
+  payload = b'\x00'
+  while payload[0] != 0x88:
+    success, payload = pd.rxpacket_buffered(ser)
+
+    if payload == b'':
+      print('Serial timeout')
+      return 0
+
+    if success == 0:
+      print('Error receiving response from AT set CH')
+      return 0
+
+    if payload[0] == 0x88:
+      error = pd.decode_atcomres(payload)
+      if error == 1:
+        print('Error reported by AT command response')
+        return 0
+
+  success = 1
+  return success
 
 # Sensor node object
 # On creation, must declare:
@@ -261,6 +298,63 @@ class node:
         if self.logfile != None:
           logAction(self.logfile,'Error setting node {}\'s aggregator'.
               format(self.name))
+
+  def setChannel(self,ser,channel,**kwargs):
+    if self.status == 'Sensing':
+      print('Cannot send command. Node is sensing')
+    else:
+
+      # Extra ping to confirm
+      # setChannel(ser,channel,verify=True)
+      verify = kwargs.get('verify',False)
+
+      success = c.remote_channel(ser,self.addr,channel)
+      if success == 1:
+      
+        self.lastping = datetime.now()
+        if verify == True:
+
+          # Change local channel
+          channel_orig = cmdGetChannel(ser)
+          cmdSetChannel(ser,channel)
+
+          # Perform getVersion to "ping" remote
+          if self.getVersion(ser) != None:
+            self.channel = channel
+            self.lastping = datetime.now()
+            print('Node {} channel set to {} and verified'.format(
+              self.name,self.channel))
+
+            if self.logfile != None:
+              logAction(self.logfile,'Node {} channel set to {} and verified'.
+                  format(self.name,self.channel))
+          else:
+            msg = 'Node {} channel set to {} but failed verification'.format(
+              self.name,channel)
+            print(msg)
+
+            if self.logfile != None:
+              logAction(self.logfile,msg)
+
+          # revert to original channel
+          cmdSetChannel(ser,channel_orig)
+
+        else:
+          self.channel = channel
+          print('Node {} channel set to {}'.format(self.name,self.channel))
+
+          if self.logfile != None:
+            logAction(self.logfile,'Node {} channel set to {}'.format(
+              self.name,self.channel))
+
+
+      else:
+        print('Error setting node {}\'s channel'.format(self.name))
+
+        if self.logfile != None:
+          logAction(self.logfile,'Error setting node {}\'s channel'.
+              format(self.name))
+
 
   def setPeriod(self,ser,period):
     if self.status == 'Sensing':
