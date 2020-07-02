@@ -28,7 +28,7 @@ class node:
   def __init__(self, name, addr, **kwargs):
     self.name = name
     self.addr = addr
-    self.channel = 12
+    self.channel = None
     self.aggre = None
     self.txperiod = None 
     self.loc = None
@@ -318,6 +318,7 @@ class node:
         if success == True:
           self.lastping = datetime.now()
           self.status = 'Idle'
+					self.lastcommit = self.lastping
       
           if self.logfile != None:
             logAction(self.logfile,'Node {} settings committed to flash'.format(

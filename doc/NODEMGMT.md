@@ -296,7 +296,7 @@ Sends a stop command to a remote node. Success updates the value of `lastping` a
 <a name="commitSetting"></a>
 ### commitSetting(ser)
 
-Sends a "Write to Flash" command to a remote node. Success updates the value of `lastping` and sets the value of `status` to 'Idle'.
+Sends a "Write to Flash" command to a remote node. Success updates the value of `lastping`, `lastcommit`, and sets the value of `status` to 'Idle'.
 
 #### Required parameters:
 
