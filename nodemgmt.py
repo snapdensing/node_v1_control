@@ -8,16 +8,13 @@ def initcmd(dev,channel):
   ser = c.config(dev,4,channel)
   return ser
 
-def parseAggre(payload):
+# Check XBee command node channel
+def cmdGetChannel(ser):
+	pass
 
-  if len(payload) != 20:
-    print('Invalid payload')
-    return 'Error'
-  elif payload[0:2] != '5141':
-    print('Invalid payload')
-    return 'Error'
-  else:
-    return payload[2:]
+# Check XBee command node address
+def cmdGetAddr(ser):
+	pass
 
 # Sensor node object
 # On creation, must declare:

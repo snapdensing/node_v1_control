@@ -619,27 +619,27 @@ def remote_at(ser,remote,atparam,valhex):
 # Arguments:
 #   ret - (int) Max retries
 def remote_retries(ser,remote,ret):
-   if (ret < 0) | (ret > 7):
-       print('Invalid parameter value')
-       return 0 
+  if (ret < 0) | (ret > 7):
+    print('Invalid parameter value')
+     return 0 
 
-   ret_b = (ret).to_bytes(1,'big')
-   rethex = mf.hexstr(ret_b)
-   success = remote_at(ser,remote,'MR',rethex)
-   return success
+  ret_b = (ret).to_bytes(1,'big')
+  rethex = mf.hexstr(ret_b)
+  success = remote_at(ser,remote,'MR',rethex)
+  return success
 
 # Change maximum hops
 # Arguments:
 #   hops - (int) Max hops
 def remote_hops(ser,remote,hops):
-   if (hops < 1) | (hops > 32):
-       print('Invalid parameter value')
-       return 0 
+  if (hops < 1) | (hops > 32):
+    print('Invalid parameter value')
+    return 0 
 
-   hops_b = (hops).to_bytes(1,'big')
-   hopshex = mf.hexstr(hops_b)
-   success = remote_at(ser,remote,'NH',hopshex)
-   return success
+  hops_b = (hops).to_bytes(1,'big')
+  hopshex = mf.hexstr(hops_b)
+  success = remote_at(ser,remote,'NH',hopshex)
+  return success
 
 # Check local XBee address
 def local_addr(ser):
@@ -656,4 +656,17 @@ def local_addr(ser):
   addr = mf.hexstr(addr_hi) + mf.hexstr(addr_lo)
 
   print('Local address: 0x{}'.format(addr))
+
+  return addr
+
+# Check local XBee channel
+def local_ch(ser):
+  bytestr = pe.atcom_query('CH')
+  ser.write(bytestr)
+  success, payload = pd.rxpacket(ser)
+  channel = int('0x'+payload[5:],0)
+
+  print('Local channel: 0x{}'.format(channel))
+
+  return(channel) 
 
