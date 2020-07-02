@@ -621,7 +621,7 @@ def remote_at(ser,remote,atparam,valhex):
 def remote_retries(ser,remote,ret):
   if (ret < 0) | (ret > 7):
     print('Invalid parameter value')
-     return 0 
+    return 0 
 
   ret_b = (ret).to_bytes(1,'big')
   rethex = mf.hexstr(ret_b)
@@ -664,9 +664,9 @@ def local_ch(ser):
   bytestr = pe.atcom_query('CH')
   ser.write(bytestr)
   success, payload = pd.rxpacket(ser)
-  channel = int('0x'+payload[5:],0)
+  channel = int('0x' + mf.hexstr(payload[5:]),0)
 
-  print('Local channel: 0x{}'.format(channel))
+  print('Local channel: {}'.format(channel))
 
   return(channel) 
 

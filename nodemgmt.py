@@ -315,7 +315,7 @@ class node:
         if success == True:
           self.lastping = datetime.now()
           self.status = 'Idle'
-					self.lastcommit = self.lastping
+          self.lastcommit = self.lastping
       
           if self.logfile != None:
             logAction(self.logfile,'Node {} settings committed to flash'.format(
