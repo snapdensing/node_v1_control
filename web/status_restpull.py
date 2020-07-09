@@ -1,6 +1,5 @@
 import requests
 import gspread
-import numpy as np
 from apscheduler.schedulers.blocking import BlockingScheduler
 from datetime import datetime
 import nodemgmt as n
@@ -46,7 +45,7 @@ print('')
 def job_function(nodes_dict):
 
   now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-  r = requests.get('http://122.53.116.119/api-v0_5/aggregator/2/nodes/30s')
+  r = requests.get('http://122.53.116.119/api-v0_5/aggregator/2/nodes/5m')
   x = r.json()
   res_list = x['results']
 
@@ -88,6 +87,7 @@ def update_sheets(nodes_dict,now):
 
 # Scheduler Run
 sched = BlockingScheduler()
-sched.add_job(job_function, 'cron', second='0,10,20,30,40,50', 
+#sched.add_job(job_function, 'cron', second='0,10,20,30,40,50', 
+sched.add_job(job_function, 'cron', minute='5,10,15,20,25,30,35,40,45,50,55', 
   args=[nodes_dict])
 sched.start()
