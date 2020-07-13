@@ -8,9 +8,11 @@ import nodemgmt as n
 # - interval - (string) Interval for Rest API (ex. '5m', '1h')
 # Return:
 # - nodes_dict - dictionary of node names/ID keyed by node address
-def getSensingRest(interval):
+def getSensingRest(interval, **kwargs):
 
-  base_url = 'http://122.53.116.119/api-v0_5/aggregator/2/nodes/'
+  base_url = kwargs.get('resturl',None)
+  if base_url == None:
+    base_url = 'http://122.53.116.119/api-v0_5/aggregator/2/nodes/'
   url = base_url + interval
   print(url)
 

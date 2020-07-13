@@ -79,6 +79,46 @@ def initNodes(inputfile, **kwargs):
   except:
     print('Error reading file')
 
+# Scan sniffer REST API for sensing nodes
+# Arguments:
+# - node_dict - dictionary of node objects keyed by name/ID
+# Optional Arguments:
+# - resturl - Base REST API URL (no interval)
+# - interval - REST API interval (i.e. 5m for 5 minutes)
+def getNodesStatusRest(node_dict, **kwargs):
+  from status_func import getSensingRest
+  from datetime import datetime
+
+  # Optional arguments
+  rest_url = kwargs.get('resturl',None)
+  rest_interval = kwargs.get('interval',None)
+  logfile = kwargs.get('log',None)
+
+  if rest_url == None:
+    rest_url = 'http://122.53.116.119/api-v0_5/aggregator/2/nodes/'
+  if rest_interval == None:
+    rest_interval = '10m'
+
+  print('url: {}'.format(rest_url))
+  print('interval: {}'.format(rest_interval))
+
+  # Dictionary of names/ID keyed by address
+  nodes_sensing = getSensingRest(rest_interval,resturl=rest_url)
+  now = datetime.now()
+
+  for addr in nodes_sensing:
+
+    # Scan node objects dict for matching address
+    for nodeid in node_dict:
+      if node_dict[nodeid].addr == addr:
+        node_dict[nodeid].status = 'Sensing'
+        node_dict[nodeid].lastping = now
+        print('Updating 0x{} status to Sensing'.format(addr))
+
+        if logfile != None:
+          logAction(logfile,'Updated Node {} (0x{}) to Sensing'.format(
+            nodeid, addr))
+
 # Sensor node object
 # On creation, must declare:
 # - name - string for unique identifier
