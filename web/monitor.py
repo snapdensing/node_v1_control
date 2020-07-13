@@ -22,7 +22,10 @@ try:
     # separate fields
     y = x[0].split(',')
 
-    init_list[y[0]] = y[1].upper()
+    # init_list dictionary
+    # key - address
+    # value - name/ID
+    init_list[y[1].upper()] = y[0]
 
   fp.close()
 
@@ -38,9 +41,8 @@ worksheet.update('A2',[header])
 
 i = 0
 for item in init_list:
-  data[i] = [item, init_list[item]]
+  data[i] = [init_list[item], item]
   i = i + 1
-
 worksheet.update('A3',data)
 
 # Get Sensing nodes from REST API
@@ -49,10 +51,12 @@ try:
 except:
   print('Error getting data from REST API')
 
+print(nodes_sensing)
+
 # Update spreadsheet with REST API results
 for item in nodes_sensing:
   if item in init_list:
-    s.findUpdate(worksheet, item, nodes_sensing[item], 'Sensing')
+    s.findUpdate(worksheet, nodes_sensing[item], item, 'Sensing')
   else:
     print('Node found sensing is not in initial list 0x{}'.format(
-      nodes_sensing[item]))
+      item))
