@@ -53,6 +53,32 @@ def cmdSetChannel(ser,channel):
   success = 1
   return success
 
+# Instantiate node objects and return as a dict keyed by name
+# Arguments:
+# - inputfile - Text file containing list of names and addresses
+# Returns:
+# - node_dict - Dictionary of node objects. Keyed by name
+def initNodes(inputfile, **kwargs):
+
+  logfile = kwargs.get('log',None)
+
+  try:
+    node_dict = {}
+    fp = open(inputfile,'r')
+    for line in fp:
+      x = line.split()
+      y = x[0].split(',')
+
+      if logfile != None:
+        node_dict[y[0]] = node(y[0], y[1].upper(), log=logfile)
+      else:
+        node_dict[y[0]] = node(y[0], y[1].upper())
+
+    return node_dict
+
+  except:
+    print('Error reading file')
+
 # Sensor node object
 # On creation, must declare:
 # - name - string for unique identifier
